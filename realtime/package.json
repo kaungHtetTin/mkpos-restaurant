@@ -1,0 +1,17 @@
+{
+    "name":  "little-lemon-realtime",
+    "private":  true,
+    "type":  "module",
+    "scripts":  {
+                    "start":  "node index.js",
+                    "test":  "node --test",
+                    "build":  "node scripts/build.mjs"
+                },
+    "engines":  {
+                    "node":  "\u003e=22.16"
+                },
+    "dependencies":  {
+                         "ws":  "8.23.0"
+                     },
+    "version":  "1.0.0"
+}

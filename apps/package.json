@@ -1,0 +1,70 @@
+{
+    "name":  "little-lemon-pos-apps",
+    "version":  "1.0.0",
+    "private":  true,
+    "description":  "Android and Windows clients for Little Lemon POS",
+    "author":  "Little Lemon POS",
+    "main":  "electron/main.cjs",
+    "scripts":  {
+                    "start":  "electron .",
+                    "test":  "node --test tests/*.test.cjs",
+                    "android:sync":  "cap sync android",
+                    "android:open":  "cap open android",
+                    "android:build":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-android.ps1",
+                    "windows:x64":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-windows.ps1 -Arch x64",
+                    "windows:ia32":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-windows.ps1 -Arch ia32",
+                    "windows:build":  "npm run windows:x64 \u0026\u0026 npm run windows:ia32"
+                },
+    "dependencies":  {
+                         "@capacitor/android":  "8.6.2",
+                         "@capacitor/core":  "8.6.2"
+                     },
+    "devDependencies":  {
+                            "@capacitor/cli":  "8.6.2",
+                            "electron":  "45.5.0",
+                            "electron-builder":  "26.18.0"
+                        },
+    "build":  {
+                  "appId":  "com.littlelemon.pos",
+                  "productName":  "Little Lemon POS",
+                  "asar":  true,
+                  "directories":  {
+                                      "output":  "../artifacts/windows"
+                                  },
+                  "files":  [
+                                "electron/**/*",
+                                "shell/**/*",
+                                "production.json",
+                                "package.json"
+                            ],
+                  "win":  {
+                              "target":  "portable",
+                              "signAndEditExecutable":  false,
+                              "artifactName":  "Little-Lemon-POS-${version}-windows-${arch}-portable.${ext}"
+                          },
+                  "portable":  {
+                                   "requestExecutionLevel":  "user"
+                               },
+                  "extraResources":  [
+                                         {
+                                             "to":  "backend",
+                                             "from":  "build/backend"
+                                         },
+                                         {
+                                             "to":  "realtime",
+                                             "from":  "build/realtime"
+                                         },
+                                         {
+                                             "to":  "php",
+                                             "from":  ".tooling/php-${arch}"
+                                         },
+                                         {
+                                             "filter":  [
+                                                            "**/*"
+                                                        ],
+                                             "from":  "build/realtime/node_modules/ws",
+                                             "to":  "realtime/node_modules/ws"
+                                         }
+                                     ]
+              }
+}

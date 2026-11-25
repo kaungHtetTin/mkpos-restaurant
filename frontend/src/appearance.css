@@ -1,0 +1,90 @@
+:root { color-scheme:light; }
+.appearance-control{position:relative;display:inline-grid;place-items:center;width:38px;height:38px;flex:0 0 38px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--ink);cursor:pointer;margin:0;vertical-align:middle}
+.appearance-control select{position:absolute;inset:0;width:100%;height:100%;min-height:0;margin:0;padding:0;opacity:0;cursor:pointer}
+.appearance-control:focus-within{outline:3px solid #b19016;outline-offset:3px}
+.appearance-public{position:fixed;top:16px;right:16px;z-index:40;box-shadow:0 2px 12px #0001}
+.guest-platform-toolbar{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-bottom:12px}
+.guest-platform-toolbar .guest-platform-brand{margin:0}
+@media screen {
+:root[data-theme=dark]{color-scheme:dark;--ink:#e8ede6;--muted:#aab5a6;--border:#39443b;--yellow:#f5d24c;--yellow-soft:#3a3420;--green:#91c9a1;--purple:#c2afe9;--surface:#202822;--surface-raised:#29332b;--page:#141915;color:var(--ink);background:var(--page)}
+:root[data-theme=dark] body{background:var(--page);color:var(--ink)}
+:root[data-theme=dark] :is(.office-shell,.login-page,.office-login,.business-setup,.workspace){background:var(--page);color:var(--ink)}
+:root[data-theme=dark] :is(.sidebar,.office-sidebar,.topbar,.office-header,.mobile-nav,.login-form-wrap,.office-login-card,.setup-card,.panel,.platform-card,.modal,.search,.office-filter-drawer,.office-filter-footer,.office-row-menu[open]>div,.office-kpis>div,.office-health-grid>div,.office-allocation-summary>div,.shift-metric,.sale-summary-card,.charge-preview,.refund-summary>div){background:var(--surface);border-color:var(--border);color:var(--ink)}
+:root[data-theme=dark] :is(input,select,textarea,.office-form input:not([type=checkbox]),.office-form select,.office-form textarea,.office-filters input,.office-filters select,.office-login-card input,.office-filter-fields input,.office-filter-fields select,.office-finance-category-filter select){background:var(--page);color:var(--ink);border-color:var(--border)}
+:root[data-theme=dark] input::placeholder,:root[data-theme=dark] textarea::placeholder{color:#98a492}
+:root[data-theme=dark] .search input{background:transparent}
+:root[data-theme=dark] :is(.button,.icon-button,.appearance-control,.office-row-menu button,.office-row-menu a,.table-action-tabs button){background:var(--surface);border-color:var(--border);color:var(--ink)}
+:root[data-theme=dark] :is(.button:hover:not(:disabled),.icon-button:hover,.office-row-menu button:hover,.office-row-menu a:hover,.sale-summary-card:hover:not(:disabled)){background:var(--surface-raised)}
+:root[data-theme=dark] .button.primary{background:var(--yellow);border-color:var(--yellow);color:#302c19}
+:root[data-theme=dark] .button.primary:hover:not(:disabled){background:#eac43c;border-color:#eac43c}
+:root[data-theme=dark] .office-shell .button.primary,:root[data-theme=dark] .office-filter-footer .button.primary{background:var(--office-accent,#c7a92e);border-color:var(--office-accent,#c7a92e);color:var(--office-accent-text,#17200f)}
+:root[data-theme=dark] .button.dark{background:#d8e3d4;color:#202822;border-color:#d8e3d4}
+:root[data-theme=dark] .button.dark:hover:not(:disabled){background:#edf2e9}
+:root[data-theme=dark] :is(.button.danger,.form-error,.office-warning,.offline-banner){background:#3c2424;border-color:#79443f;color:#ffb6a8}
+:root[data-theme=dark] :is(.danger-text,.menu-unavailable){color:#ffb6a8}
+:root[data-theme=dark] :is(.button.soft-yellow,.service-note,.floor-note,.guest-quick-setup,.charge-settings-note,.receipt-settings-note,.options-warning,.item-price-editor,.table-action-preview,.combined-table-note,.adjustment-limit,.settlement-balance,.order-payment-progress,.subscription-banner,.shift-metric.highlight){background:var(--yellow-soft);border-color:#665932;color:#eddaa0}
+:root[data-theme=dark] :is(.tabs,.category-tabs,.auth-tabs,.platform-auth .auth-tabs,.shift-metrics,.office-event-details,.receipt-settings-preview,.sales-record-summary,.shift-empty-icon,.empty-icon,.office-map,.table-legend){background:#1a211c;border-color:var(--border)}
+:root[data-theme=dark] :is(.tabs button.selected,.auth-tabs button.selected,.table-action-tabs button.selected,.office-calendar button.selected,.office-tab-links .active,.sale-summary-card.selected,.table-choice:has(input:checked),.option-choice:has(input:checked)){background:var(--yellow-soft);border-color:#8f7c36;color:#f5df91}
+:root[data-theme=dark] :is(.category-tabs button,.quantity-control,.quantity-control button,.guest-quantity,.office-calendar button){background:var(--surface);border-color:var(--border);color:var(--ink)}
+:root[data-theme=dark] .category-tabs button.selected{background:var(--yellow);border-color:var(--yellow);color:#302c19}
+:root[data-theme=dark] :is(.nav-item,.office-sidebar nav a,.office-sidebar-bottom,.mobile-nav a,.mobile-nav button,.breadcrumb,.breadcrumb strong,.section-label,.text-button,.tabs button,.back-link,.office-back,.auth-links a){color:var(--muted)}
+:root[data-theme=dark] :is(.nav-item:hover,.office-sidebar nav a:hover){background:var(--surface-raised)}
+:root[data-theme=dark] :is(.nav-item.active,.office-sidebar nav a.active,.mobile-nav a.active,.mobile-nav button.active){background:var(--yellow-soft);color:#f5df91}
+:root[data-theme=dark] :is(.brand,.office-brand,.setup-brand,.table-card-title strong,.empty h3,.receipt-settings-preview>.row-between>span){color:var(--ink)}
+:root[data-theme=dark] :is(.muted,.eyebrow,.brand-caption,.nav-label,.office-header-muted,.office-brand small,.office-sidebar-bottom small,.office-kpis span,.office-title p,.platform-card p,.page-heading p,.panel-header p,.field-hint,.office-note,.service-note strong,.service-note p,.sidebar-footer,.workspace-footer,.food-info p,.food-info strong,.table-card-top,.table-card-title>span,.table-card-bottom,.table-legend,.topbar-date,.user-name span,.cart-help,.cart-subtotal,.cart-line .text-button,.price-note,.item-quantity,.order-discount-action,.takeaway-card p,.order-number,.ticket-meta,.ticket-time,.setting-row p,.history-filters,.pagination,.office-pagination,.office-filter-heading p,.guest-note,.guest-cart-lines small,.option-summary,.receipt-print-help,.shift-status,.shift-metric span,.sales-chart-bar,.chart-label){color:var(--muted)}
+:root[data-theme=dark] :is(.panel-header,.cart-heading,.cart-footer,.cart-line,.cart-total,.ticket-top,.ticket-meta,.ticket-items,.takeaway-items,.table-card-bottom,.sidebar-footer,.setting-row,.pagination,.office-pagination,.office-filter-heading,.office-filter-footer,.guest-cart-lines article,.subscription-request-table th,.subscription-request-table td,.office-table th,.office-table td,th,td){border-color:var(--border)}
+:root[data-theme=dark] :is(th,.office-table th,.subscription-request-table th){background:#1a211c;color:var(--muted)}
+:root[data-theme=dark] :is(td,.office-table td,.subscription-request-table td){color:var(--ink)}
+:root[data-theme=dark] :is(tbody tr:hover,.office-table tbody tr:hover){background:#263029}
+:root[data-theme=dark] :is(.table-card,.takeaway-card,.kitchen-ticket,.food-card,.setting-icon,.user-avatar,.count-pill,.tabs button span,.badge,.platform-badge,.receipt-settings-preview>.row-between>span){background:var(--surface);color:var(--ink);border-color:var(--border)}
+:root[data-theme=dark] :is(.table-visual,.table-visual:before,.table-visual:after,.table-seat){background:#303a2b;border-color:#59684b}
+:root[data-theme=dark] .table-visual{color:#c6d3b8}
+:root[data-theme=dark] .food-image{background:#382f28}
+:root[data-theme=dark] :is(.badge.available,.badge.ready,.badge.paid,.badge.served,.badge.collected,.platform-badge.active,.connection,.platform-success,.paid-notice,.shift-count-difference.balanced,.subscription-request-status.approved){background:#213c2b;border-color:#3f634b;color:#a5ddb4}
+:root[data-theme=dark] :is(.badge.occupied,.badge.sent,.badge.preparing,.platform-badge.trial,.subscription-request-status.pending){background:#40361d;color:#f1d377}
+:root[data-theme=dark] :is(.badge.cancelled,.badge.refunded,.platform-badge.suspended,.platform-badge.expired,.platform-badge.cancelled,.subscription-request-status.rejected,.connection.offline){background:#402626;color:#ffb6a8}
+:root[data-theme=dark] :is(.badge.payment,.badge.unpaid,.badge.merged){background:#352b44;color:#d5bdf3}
+:root[data-theme=dark] :is(.badge.draft,.subscription-request-review td>div){background:var(--surface-raised);color:var(--muted)}
+:root[data-theme=dark] :is(.modal-overlay,.office-filter-overlay){background:#0009}
+:root[data-theme=dark] .login-art h1{color:#fae5a0}
+:root[data-theme=dark] :is(.login-form>p,.login-form form>label){color:var(--muted)}
+:root[data-theme=dark] .login-story{background:#40371c;color:#fae5a0}
+:root[data-theme=dark] :is(.login-art p,.login-story-footer,.login-form .eyebrow,.art-label){color:#e3d09b}
+:root[data-theme=dark] .art-circle{background:#5d4f20;box-shadow:0 0 0 18px #f5d24c10,0 0 0 36px #f5d24c08}
+:root[data-theme=dark] body:has(.guest-shell){--guest-soft:#3a3420;--guest-border:#665932;--guest-heading:#f3e8c8;--guest-muted:#c2baa4;background:var(--page)}
+:root[data-theme=dark] .guest-shell .guest-header{background:linear-gradient(140deg,#2c2b20,#3c331b);border-color:var(--guest-border)}
+:root[data-theme=dark] .guest-shell .guest-table-label{background:#202822b8}
+:root[data-theme=dark] .guest-shell .guest-status{background:var(--guest-soft);color:var(--ink)}
+:root[data-theme=dark] .guest-quantity button{background:var(--yellow-soft);color:var(--ink)}
+:root[data-theme=dark] .guest-shell>.category-tabs{background:transparent}
+/* Physical receipts and QR codes must remain black on white in either appearance. */
+:root[data-theme=dark] :is(.receipt-paper,.qr-sheet,.qr-sheet h2,.qr-sheet h3,.qr-sheet p,.qr-sheet strong){background:#fff;color:#111;color-scheme:light}
+:root[data-theme=dark] .qr-sheet{padding:20px;border-radius:10px}
+
+:root[data-theme=dark] :is(.stat,.food-add,.food-edit,.payment-methods>button,.summary-payment,.quantity-box,.stat-icon,.ready-heading-icon,.ready-order-icon,.plate-icon,.floor-legend,.ticket-top,.to-go .ticket-top){background:var(--surface);border-color:var(--border);color:var(--ink)}
+:root[data-theme=dark] :is(.table-card.occupied,.table-card.payment){background:var(--surface)}
+:root[data-theme=dark] :is(.table-drawing span,.table-drawing>i){background:#303a2b;border-color:#59684b;color:#c6d3b8}
+:root[data-theme=dark] .occupied .table-drawing :is(span,i){background:#493e20;border-color:#7b6b32;color:#edda91}
+:root[data-theme=dark] .payment .table-drawing :is(span,i){background:#3a2d46;border-color:#6e5685;color:#d6bde9}
+:root[data-theme=dark] :is(.yellow-note,.item-note,.payment-total,.payment-methods>button.selected,.settings-tabs button.selected){background:var(--yellow-soft);border-color:#665932;color:#eddaa0}
+:root[data-theme=dark] :is(.stat-top,.stat p,.stat-trend,.ready-panel p,.ready-panel h3,.food-info h3,.quantity-control span,.kitchen-food strong,.setting-row strong,.order-timeline,.cart-line-bottom,.cart-line .row-between>strong){color:var(--ink)}
+:root[data-theme=dark] .yellow-note :is(h2,h3,p,strong){color:#eddaa0}
+:root[data-theme=dark] :is(.stat.green .stat-icon,.change-row,.ready-ribbon){background:#213c2b;color:#a5ddb4}
+:root[data-theme=dark] .stat.yellow .stat-icon{background:#40361d;color:#f1d377}
+:root[data-theme=dark] .stat.purple .stat-icon{background:#352b44;color:#d5bdf3}
+:root[data-theme=dark] .food-art{background:#382f28}
+:root[data-theme=dark] .food-art:before{background:#ffffff0a}
+:root[data-theme=dark] .sold-out-label{background:#202822e6;color:var(--ink)}
+:root[data-theme=dark] .receipt{background:#fff;color:#111;color-scheme:light}
+:root[data-theme=dark] .receipt :is(h2,h3,p,strong,span){color:#111}
+:root[data-theme=dark] :is(.user-name strong,.small-empty strong,.ready-row strong,.cart-line h3,.office-table a,.office-mobile-amount){color:var(--ink)}
+:root[data-theme=dark] :is(.small-empty p,.ready-row p,.note-top,.note-bottom,.food-category,.cart-heading p,.checkbox-line,.bill-breakdown span,.charge-help,.discount-history,.office-filter-fields>label){color:var(--muted)}
+:root[data-theme=dark] .office-action-column{background:var(--surface)}
+:root[data-theme=dark] .bill-breakdown .bill-discount,:root[data-theme=dark] .bill-breakdown .bill-discount span{color:#a5ddb4}
+:root[data-theme=dark] .receipt-paper .bill-breakdown span{color:inherit}
+
+}
+@media print{
+ :root[data-theme=dark],:root[data-theme=dark] body{background:#fff;color:#111;color-scheme:light}
+ .appearance-control,.guest-platform-toolbar{display:none!important}
+}

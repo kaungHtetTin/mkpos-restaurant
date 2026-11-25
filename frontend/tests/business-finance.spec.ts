@@ -1,0 +1,32 @@
+import {test,expect,type Page} from '@playwright/test';
+import {randomUUID} from 'node:crypto';
+async function navigate(page:Page,name:string){
+ const link=page.getByRole('link',{name,exact:true});if(await link.isVisible()){await link.click();return;}
+ await page.getByRole('button',{name:/^More/}).click();await page.getByRole('dialog').getByRole('link',{name,exact:true}).click();
+}
+test('owner records income and expenses, manages categories, and keeps filters when returning',async({page},info)=>{
+ test.setTimeout(60000);
+ const code=`finance-${info.project.name}-${Date.now()}`,session=await(await page.request.get('/api/v1/session')).json();
+ const registered=await page.request.post('/api/v1/register',{headers:{'X-CSRF-TOKEN':session.csrf},data:{name:'Finance Owner',email:code+'@example.test',password:'Secret123!',password_confirmation:'Secret123!',business_name:'Finance Cafe',business_code:code}});expect(registered.status()).toBe(201);const account=await registered.json();
+ const setup=await page.request.post('/api/v1/setup',{headers:{'X-CSRF-TOKEN':account.csrf,'Idempotency-Key':randomUUID()},data:{name:'Finance Cafe',currency:'MMK',timezone:'Asia/Yangon',other_payment_label:'QR / Card',takeaway_only:false,tables:[{name:'A1',seats:4}],menu:[{name:'Rice',category:'Main',price:6500}]}});expect(setup.ok()).toBeTruthy();
+ await page.goto('/tables');await expect(page.locator('.connection')).toContainText('Connected');await navigate(page,'Finance');
+ await expect(page.getByRole('heading',{name:'Income & expenses.',exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:'Add entry',exact:true})).toBeDisabled();await page.getByRole('button',{name:'Categories',exact:true}).click();
+ const category=async(name:string)=>{await page.getByRole('button',{name:'Add category',exact:true}).click();await page.getByLabel('Category name',{exact:true}).fill(name);await page.getByRole('button',{name:'Save changes',exact:true}).click();await expect(page.getByRole('dialog')).toHaveCount(0);};
+ await category('Unused');await page.getByRole('button',{name:'Delete Unused',exact:true}).click();await page.getByRole('button',{name:'Delete category',exact:true}).click();await expect(page.getByRole('dialog')).toHaveCount(0);await expect(page.locator('.finance-category')).toHaveCount(0);
+ await category('Operations');await page.getByRole('button',{name:'Add category',exact:true}).click();await page.getByLabel('Category name',{exact:true}).fill('Unsaved category');await page.getByRole('button',{name:'Close dialog',exact:true}).click();await expect(page.locator('.finance-category')).toHaveCount(1);
+ await page.getByRole('button',{name:'Entries',exact:true}).click();
+ const observer=await page.context().newPage();await observer.goto(new URL('/finance',page.url()).href);await expect(observer.locator('.connection')).toContainText('Connected');
+ const entry=async(kind:string,amount:string,description:string)=>{await page.getByRole('button',{name:'Add entry',exact:true}).click();await page.getByLabel('Type',{exact:true}).last().selectOption(kind);await page.getByLabel('Amount (MMK)',{exact:true}).fill(amount);await page.getByLabel('Description',{exact:true}).fill(description);await page.getByRole('button',{name:'Save changes',exact:true}).click();await expect(page.getByRole('dialog')).toHaveCount(0);};
+ await entry('income','5000','Other income');await entry('expense','1200','Rice purchase');await expect(page.locator('.finance-totals')).toContainText('3,800 MMK');await expect(observer.locator('.finance-record')).toHaveCount(2);
+ await page.getByRole('button',{name:'Edit Rice purchase',exact:true}).click();await page.getByLabel('Amount (MMK)',{exact:true}).fill('1500');await page.getByLabel('Notes (optional)',{exact:true}).fill('Delivery included');await page.getByRole('button',{name:'Save changes',exact:true}).click();await expect(page.getByRole('dialog')).toHaveCount(0);await expect(page.locator('.finance-totals')).toContainText('3,500 MMK');
+ await page.getByLabel('Appearance',{exact:true}).selectOption('dark');await expect(page.locator('.finance-records')).toHaveCSS('background-color','rgb(32, 40, 34)');
+ await page.screenshot({path:`test-results/${info.project.name}-business-finance-dark.png`,fullPage:true,animations:'disabled'});
+ await page.getByRole('button',{name:'Categories',exact:true}).click();await expect(page.getByRole('button',{name:'Delete Operations',exact:true})).toBeDisabled();await page.getByRole('button',{name:'Edit category',exact:true}).click();await page.getByLabel('Category name',{exact:true}).fill('Restaurant operations');await page.getByLabel('Available for new entries',{exact:true}).uncheck();await page.getByRole('button',{name:'Save changes',exact:true}).click();await expect(page.getByRole('dialog')).toHaveCount(0);await expect(page.locator('.finance-category')).toContainText('Archived');
+ await page.getByRole('button',{name:'Entries',exact:true}).click();await expect(page.locator('.finance-record').first()).toContainText('Operations');
+ await page.getByRole('button',{name:'Void Other income',exact:true}).click();await page.getByLabel('Reason',{exact:true}).fill('Duplicate entry');await page.getByRole('button',{name:'Void entry',exact:true}).click();await expect(page.getByRole('dialog')).toHaveCount(0);await expect(page.locator('.finance-record')).toHaveCount(1);await expect(page.locator('.finance-totals')).toContainText('-1,500 MMK');
+ await page.getByRole('combobox',{name:'Status',exact:true}).selectOption('voided');await page.getByRole('button',{name:'Apply filters',exact:true}).click();await expect(page.locator('.finance-record')).toContainText('Voided: Duplicate entry');
+ await page.getByRole('button',{name:'Clear',exact:true}).click();await page.getByLabel('Search',{exact:true}).fill('Rice');await page.getByRole('button',{name:'Apply filters',exact:true}).click();await expect(page.locator('.finance-record')).toHaveCount(1);
+ await navigate(page,'Tables');const requests:string[]=[];const capture=(request:any)=>{if(new URL(request.url()).pathname==='/api/v1/business-finance')requests.push(request.url());};page.on('request',capture);await page.goBack();await expect(page.getByLabel('Search',{exact:true})).toHaveValue('Rice');await expect(page.locator('.finance-record')).toContainText('Rice purchase');expect(requests).toHaveLength(0);page.off('request',capture);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();await observer.close();
+});

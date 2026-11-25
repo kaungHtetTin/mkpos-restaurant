@@ -1,0 +1,60 @@
+import { test, expect } from '@playwright/test';
+import { randomUUID } from 'node:crypto';
+
+test('business logo previews, saves and prints on receipts and QR sheets', async ({ page }, info) => {
+  if (info.project.name === 'phone') await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(() => {
+    Object.assign(window, { logoPrintCalls: 0 });
+    window.print = () => { (window as unknown as { logoPrintCalls: number }).logoPrintCalls++; window.dispatchEvent(new Event('afterprint')); };
+  });
+  const session = await (await page.request.get('/api/v1/session')).json();
+  const code = `business-logo-${info.project.name}-${Date.now()}`;
+  const registration = await page.request.post('/api/v1/register', { headers: { 'X-CSRF-TOKEN': session.csrf }, data: { name: 'Logo Owner', email: `${code}@example.test`, password: 'LogoPassword123!', password_confirmation: 'LogoPassword123!', business_name: 'Logo Cafe', business_code: code } });
+  expect(registration.status()).toBe(201); const account = await registration.json();
+  const action = async (path: string, data: Record<string, unknown>) => {
+    const response = await page.request.post(`/api/v1/${path}`, { headers: { 'X-CSRF-TOKEN': account.csrf, 'Idempotency-Key': randomUUID() }, data });
+    expect(response.ok(), await response.text()).toBe(true); return response.json();
+  };
+  await action('setup', { name: 'Logo Cafe', currency: 'MMK', timezone: 'Asia/Yangon', other_payment_label: 'QR / Card', takeaway_only: false, tables: [{ name: 'A1', seats: 4 }], menu: [{ name: 'Rice', category: 'Main', price: 6500 }] });
+  await action('guest-orders/configure', { action: 'enable' });
+  await page.goto('/settings'); await page.getByRole('button', { name: 'Receipts', exact: true }).click();
+  const source = await page.evaluate(() => {
+    const canvas = document.createElement('canvas'); canvas.width = 240; canvas.height = 90;
+    const context = canvas.getContext('2d')!; context.fillStyle = '#386048'; context.fillRect(0, 0, 240, 90);
+    context.fillStyle = '#fff'; context.font = 'bold 38px sans-serif'; context.fillText('LOGO', 62, 58);
+    return canvas.toDataURL('image/png');
+  });
+  await page.getByLabel('Upload business logo', { exact: true }).setInputFiles({ name: 'business.png', mimeType: 'image/png', buffer: Buffer.from(source.split(',')[1], 'base64') });
+  await expect(page.locator('.receipt-settings-preview').getByRole('img', { name: 'Business logo', exact: true })).toHaveJSProperty('naturalWidth', 240);
+  await page.getByRole('button', { name: 'Save receipt settings', exact: true }).click();
+  await expect(page.getByText('Receipt settings saved. New receipts will use this format.', { exact: true })).toBeVisible();
+  const state = await (await page.request.get('/api/v1/state')).json(); expect(state.settings.logo_data_url).toBe(source);
+  await page.getByRole('button', { name: 'Test receipt', exact: true }).click();
+  let dialog = page.getByRole('dialog', { name: 'Test receipt', exact: true });
+  await expect(dialog.getByRole('img', { name: 'Business logo', exact: true })).toHaveAttribute('src', source);
+  await dialog.screenshot({ path: `test-results/${info.project.name}-business-logo-receipt.png` });
+  await dialog.getByRole('button', { name: 'Print test receipt', exact: true }).click();
+  await expect.poll(() => page.evaluate(() => (window as unknown as { logoPrintCalls: number }).logoPrintCalls)).toBe(1);
+  await dialog.getByRole('button', { name: 'Close dialog', exact: true }).click();
+  await page.goto('/guest-orders?tab=links');
+  const card = page.locator('.guest-link-card').filter({ has: page.getByRole('heading', { name: 'Table A1', exact: true }) });
+  await card.getByRole('button', { name: 'View / print QR', exact: true }).click();
+  dialog = page.getByRole('dialog', { name: 'Guest menu QR code', exact: true });
+  await expect(dialog.getByRole('img', { name: 'Business logo', exact: true })).toHaveAttribute('src', source);
+  await expect(dialog.getByRole('button', { name: 'Print QR code', exact: true })).toBeEnabled();
+  await dialog.screenshot({ path: `test-results/${info.project.name}-business-logo-qr.png` });
+  await dialog.getByRole('button', { name: 'Print QR code', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Close dialog', exact: true }).click();
+  await page.getByRole('button', { name: 'Print table QR codes', exact: true }).click();
+  dialog = page.getByRole('dialog', { name: 'Print table QR codes', exact: true });
+  await expect(dialog.getByRole('img', { name: 'Business logo', exact: true })).toHaveCount(1);
+  await dialog.getByRole('button', { name: 'Print all tables', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Close dialog', exact: true }).click();
+  await page.goto('/settings'); await page.getByRole('button', { name: 'Receipts', exact: true }).click();
+  await page.getByRole('button', { name: 'Remove business logo', exact: true }).click();
+  await expect(page.locator('.receipt-settings-preview').getByRole('img', { name: 'Business logo', exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Save receipt settings', exact: true }).click();
+  await expect(page.getByText('Receipt settings saved. New receipts will use this format.', { exact: true })).toBeVisible();
+  expect((await (await page.request.get('/api/v1/state')).json()).settings.logo_data_url).toBeNull();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});

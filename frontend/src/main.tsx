@@ -1,0 +1,18 @@
+import React from 'react';
+import { AppearanceProvider } from './Appearance';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import { PlatformBranding } from './PlatformBranding';
+import { App } from './App';
+import './styles.css';
+import './accessibility.css';
+import './desktop.css';
+import './receipt.css';
+import './login.css';
+import './price-controls.css';
+import './platform.css';
+import './density.css';
+import './appearance.css';
+import './platform-logo.css';
+import './locale.css';
+ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><BrowserRouter><AppearanceProvider><PlatformBranding><App /></PlatformBranding></AppearanceProvider></BrowserRouter></React.StrictMode>);

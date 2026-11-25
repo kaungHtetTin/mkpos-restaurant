@@ -1,0 +1,180 @@
+/* Larger type with less padding on desktop; phone and print styles stay separate. */
+@media screen and (min-width: 1024px) {
+  :root { font-size: 15px; }
+
+  .topbar { height: 68px; padding-inline: 26px; }
+  .workspace main { padding: 22px 26px 26px; }
+  .workspace-footer { padding: 0 26px 16px; font-size: 11px; }
+  .page-heading { margin-bottom: 21px; gap: 16px; }
+  .page-heading h1, .order-title-row h1 { font-size: 32px; }
+  .page-heading p { margin-top: 6px; font-size: 14px; }
+  .eyebrow, .page-heading .eyebrow { font-size: 11px; margin-bottom: 7px; letter-spacing: 1.2px; }
+  .panel-header { padding: 16px 19px; gap: 12px; }
+  .panel-header h2, .menu-search-row h2 { font-size: 18px; }
+  .panel-header p { font-size: 13px; margin-top: 4px; }
+  .section-toolbar { gap: 14px; margin-bottom: 17px; }
+  .section-label { font-size: 13px; }
+
+  .sidebar { padding-top: 22px; padding-bottom: 14px; }
+  .nav-label { margin-top: 30px; margin-bottom: 10px; font-size: 10px; }
+  .sidebar nav { gap: 4px; }
+  .nav-item { min-height: 43px; padding: 10px 14px; gap: 11px; font-size: 14px; }
+  .service-note { margin-top: 24px; padding: 15px; }
+  .service-note strong { font-size: 15px; line-height: 1.5; }
+  .service-note p { font-size: 12px; line-height: 1.5; max-width: none; }
+  .little-sun { margin-bottom: 10px; }
+  .sidebar-footer { font-size: 10px; padding-top: 13px; margin-top: 9px; }
+  .breadcrumb { font-size: 13px; }
+  .topbar-date, .user-name strong { font-size: 12px; }
+  .user-name span, .connection { font-size: 11px; }
+
+  .button, .page-heading .button { font-size: 14px; min-height: 40px; padding: 9px 14px; }
+  .button.small { font-size: 12px; min-height: 34px; padding: 7px 10px; }
+  .text-button { font-size: 12px; }
+  .badge { font-size: 12px; padding: 4px 7px; }
+  .count-pill { font-size: 12px; }
+  .tabs button, .floor-toolbar .tabs button, .category-tabs button { font-size: 13px; min-height: 36px; padding: 8px 11px; }
+  .tabs button span { font-size: 11px; }
+  .search input, .floor-toolbar .search input { font-size: 13px; min-height: 38px; }
+  input, select, textarea { font-size: 14px; min-height: 40px; padding: 9px 11px; }
+  label, .restaurant-form label { font-size: 14px; }
+  form > label { margin-bottom: 14px; }
+  label > input, label > textarea, label > select { margin-top: 6px; }
+  .field-hint, .optional { font-size: 12px; }
+
+  .stats-grid { gap: 12px; margin-bottom: 20px; }
+  .stat { padding: 14px 17px; }
+  .stat-top { font-size: 13px; }
+  .stat > strong { font-size: 32px; margin-top: 1px; }
+  .stat p { font-size: 12px; margin-top: 2px; }
+  .floor-layout { gap: 18px; }
+  .floor-toolbar { padding: 14px 17px 4px; gap: 10px; }
+  .floor-toolbar .search { max-width: 205px; }
+  .table-grid { padding: 15px 17px 18px; gap: 12px; }
+  .table-card { padding: 11px 12px 0; min-height: 0; }
+  .table-card-top { font-size: 12px; }
+  .table-drawing { margin: 12px auto; height: 57px; }
+  .table-drawing span { height: 40px; }
+  .table-card-title { padding-bottom: 10px; gap: 3px; }
+  .table-card-title strong { font-size: 16px; }
+  .table-card-title > span, .table-card-bottom { font-size: 12px; }
+  .table-card-bottom { min-height: 32px; padding-block: 8px; }
+  .table-card-bottom > span:only-child { font-size: 11px; }
+  .floor-legend { padding: 11px; gap: 17px; }
+  .floor-legend > span, .live-label { font-size: 11px; }
+  .ready-panel .panel-header { padding: 15px; }
+  .ready-panel h2 { font-size: 16px; }
+  .ready-row { padding: 12px 0; }
+  .ready-row strong { font-size: 14px; }
+  .ready-row p { font-size: 12px; }
+  .small-empty { padding: 20px 12px; }
+  .small-empty strong { font-size: 14px; }
+  .small-empty p, .aside-caption { font-size: 12px; }
+  .yellow-note { padding: 18px; }
+  .yellow-note h3 { font-size: 22px; margin-top: 11px; }
+  .yellow-note p { font-size: 12px; line-height: 1.6; max-width: none; }
+  .note-top, .note-bottom { font-size: 10px; }
+
+  .category-tabs { margin-bottom: 16px; gap: 7px; }
+  .order-layout .food-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .food-grid, .order-layout .food-grid { gap: 12px; }
+  .food-info, .order-layout .food-info { padding: 12px 13px 14px; }
+  .food-info h3, .catalog-grid .food-info h3, .order-layout .food-info h3 { font-size: 15px; line-height: 1.45; margin-bottom: 5px; }
+  .food-info p, .catalog-grid .food-info p, .order-layout .food-info p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 13px; line-height: 1.5; min-height: 39px; margin-bottom: 10px; }
+  .food-info strong, .catalog-grid .food-info strong, .order-layout .food-info strong { font-size: 14px; }
+  .food-category { font-size: 11px; margin-bottom: 5px; }
+  .order-heading { margin-bottom: 21px; }
+  .back-link, .order-heading p { font-size: 12px; }
+  .menu-search-row { margin-bottom: 16px; }
+  .cart-heading { padding: 16px; }
+  .cart-heading h2 { font-size: 17px; }
+  .cart-heading p { font-size: 12px; }
+  .cart-items { padding-inline: 16px; }
+  .cart-line { padding-block: 14px; }
+  .cart-line h3 { font-size: 14px; }
+  .cart-line .row-between > strong { font-size: 13px; }
+  .cart-line-bottom { margin-top: 8px; gap: 7px; }
+  .cart-line-bottom > .badge { font-size: 11px; }
+  .cart-line-bottom .button.small { font-size: 11px; }
+  .quantity-control span { font-size: 13px; }
+  .item-note, .item-quantity, .cart-subtotal, .cart-help, .price-note, .cart-notice, .paid-notice { font-size: 12px; }
+  .cart-footer { padding: 16px; }
+  .cart-footer .button { font-size: 13px; }
+  .cart-total { margin-top: 11px; padding-block: 13px; font-size: 17px; }
+  .cart-total strong:last-child { font-size: 21px; }
+  .takeaway-grid, .kitchen-grid { gap: 16px; }
+  .takeaway-card { padding: 18px; }
+  .takeaway-card h2 { font-size: 19px; margin-top: 15px; }
+  .takeaway-card > p, .takeaway-items p, .takeaway-footer { font-size: 13px; }
+  .takeaway-items { padding-block: 13px; margin-block: 15px; min-height: 90px; }
+  .order-number, .takeaway-card > .row-between > .muted { font-size: 12px; }
+  .takeaway-card > .row-between > strong { font-size: 15px; }
+  .ticket-top { padding: 17px 18px 13px; }
+  .ticket-top .eyebrow { font-size: 11px; }
+  .ticket-meta { padding: 10px 18px; font-size: 12px; }
+  .ticket-time { font-size: 12px; }
+  .ticket-items { padding-inline: 18px; }
+  .kitchen-line { padding-block: 14px; }
+  .kitchen-food strong { font-size: 16px; }
+  .kitchen-food .item-note { font-size: 13px; }
+  .kitchen-line-actions { margin-top: 10px; }
+  .kitchen-line-actions > .badge, .kitchen-line-actions > .button.small { font-size: 12px; }
+
+  th { padding: 12px 16px; font-size: 13px; }
+  td { padding: 13px 16px; font-size: 14px; }
+  td strong { font-size: 14px; }
+  td small { font-size: 12px; margin-top: 3px; }
+  .pagination { padding: 13px 17px; font-size: 12px; }
+  .history-filters { padding: 17px; }
+  .history-filters > label:not(.search) { font-size: 12px; }
+  .history-filters select, .history-filters input[type=date] { font-size: 14px; min-height: 40px; }
+  .settings-tabs button { font-size: 14px; min-height: 42px; }
+  .settings-panel .panel-header { min-height: 77px; }
+  .setting-row { padding-block: 14px; }
+  .setting-row strong { font-size: 15px; }
+  .setting-row p { font-size: 13px; }
+  .setting-row .badge { font-size: 11px; }
+  .restaurant-form { padding: 20px; }
+  .modal { padding: 22px; }
+  .modal-heading { margin-bottom: 20px; }
+  .modal-heading h2 { font-size: 23px; }
+  .modal-heading p, .form-error { font-size: 13px; }
+
+  .sales-summary { gap: 14px; margin-bottom: 12px; }
+  .sale-summary-card { padding: 17px 19px; }
+  .sale-summary-top { font-size: 14px; }
+  .sale-summary-card > strong { font-size: 28px; margin-top: 12px; }
+  .sale-summary-date { font-size: 13px; }
+  .sale-summary-bottom { margin-top: 12px; padding-top: 10px; font-size: 12px; }
+  .sales-basis { font-size: 12px; margin-bottom: 18px; }
+  .sales-panel > .panel-header { padding: 16px 19px; }
+  .sales-filters { padding: 15px 17px 5px; gap: 12px; }
+  .sales-filter-fields > label { font-size: 12px; }
+  .sales-filter-fields input, .sales-filter-fields select { font-size: 14px; min-height: 40px; height: 40px; margin-top: 5px; }
+  .sales-search-field > .search { height: 40px; margin-top: 5px; }
+  .sales-search-field .search input { margin-top: 0; min-height: 38px; height: 38px; }
+  .sales-filter-actions { padding-top: 22px; }
+  .sales-filter-actions .button { min-height: 40px; }
+  .sales-record-summary { padding: 16px 19px; font-size: 13px; }
+  .sales-record-summary strong { font-size: 21px; }
+  .sales-panel table th, .sales-panel table td { padding: 13px 16px; }
+  .sales-panel td.sale-amount-cell strong { font-size: 14px; }
+  .sales-chart-panel { margin-bottom: 20px; }
+  .chart-summary { padding: 17px 20px 15px; }
+  .chart-summary span, .chart-summary small { font-size: 12px; }
+  .chart-summary strong { font-size: 25px; }
+  .chart-summary .chart-selected strong { font-size: 19px; }
+  .chart-axis-caption { padding: 0 20px 17px; font-size: 12px; }
+  .chart-axis-caption > span { font-size: 11px; }
+  .chart-x-label, .chart-y-axis { font-size: 11px; }
+  .chart-footnote { font-size: 12px; padding-top: 9px; }
+  .chart-data-toggle { font-size: 12px; margin-bottom: 11px; }
+}
+
+@media screen and (min-width: 1280px) {
+  .table-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media screen and (min-width: 1440px) {
+  .catalog-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}

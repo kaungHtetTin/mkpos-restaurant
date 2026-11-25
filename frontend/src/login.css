@@ -1,0 +1,67 @@
+.login-page {
+  min-height: 100dvh;
+  grid-template-columns: minmax(0, 310px) minmax(0, 370px);
+  align-content: center;
+  justify-content: center;
+  padding: 28px;
+  background: #f5f6ef;
+}
+
+.login-story {
+  min-height: 0;
+  padding: 24px;
+  border: 1px solid #e9cc59;
+  border-right: 0;
+  border-radius: 15px 0 0 15px;
+}
+
+.login-story .brand { font-size: 16px; gap: 8px; }
+.login-story .brand-mark { width: 34px; height: 36px; font-size: 23px; }
+.login-story .brand-caption { font-size: 7px; letter-spacing: 1.3px; }
+.login-art { padding: 24px 0; }
+.art-circle { width: 84px; height: 84px; margin: 0 0 22px 8px; box-shadow: 0 0 0 10px #f8dd6b66; }
+.art-circle > span { font-size: 59px; }
+.art-label { font-size: 8px; letter-spacing: 1.2px; }
+.login-art h1 { font-size: 34px; line-height: 1.2; letter-spacing: -1.3px; margin: 12px 0 10px; }
+.login-art p { font-size: 12px; line-height: 1.65; }
+.login-story-footer { font-size: 10px; line-height: 1.6; }
+
+.login-form-wrap {
+  padding: 27px;
+  background: #fff;
+  border: 1px solid #e5e8db;
+  border-left: 0;
+  border-radius: 0 15px 15px 0;
+}
+
+.login-form { width: 100%; }
+.login-form .eyebrow { font-size: 9px; }
+.login-form h2 { font-size: 28px; margin-top: 9px; letter-spacing: -1px; }
+.login-form > p { font-size: 13px; margin-top: 5px; }
+.login-form form { margin-top: 23px; }
+.login-form form > label { font-size: 13px; margin-bottom: 14px; }
+.login-form input { min-height: 40px; font-size: 14px; margin-top: 6px; padding: 9px 11px; }
+.login-form form .button { min-height: 42px; padding: 10px 13px; margin-top: 4px; font-size: 14px; }
+.login-help { margin-top: 17px; font-size: 10px; line-height: 1.6; align-items: flex-start; }
+.login-help .tiny-dot { margin-top: 5px; flex-shrink: 0; }
+.login-form .form-error { padding: 9px 11px; margin: 10px 0; font-size: 12px; }
+
+@media (max-width: 760px) {
+  .login-page { grid-template-columns: minmax(0, 1fr); align-content: start; padding: 0; background: #fff; }
+  .login-story { padding: 19px 24px; min-height: 0; border: 0; border-radius: 0; }
+  .login-art { padding: 19px 0 0; }
+  .art-circle { width: 66px; height: 66px; margin: 0; top: 35px; bottom: auto; right: 5px; box-shadow: 0 0 0 9px #f8dd6b66; }
+  .art-circle > span { font-size: 48px; }
+  .art-label { font-size: 7px; letter-spacing: 1px; }
+  .login-art h1 { font-size: 28px; margin: 8px 0; letter-spacing: -.9px; }
+  .login-art p { font-size: 11px; line-height: 1.55; }
+  .login-form-wrap { padding: 23px 24px; border: 0; border-radius: 0; }
+  .login-form { max-width: 360px; }
+  .login-form h2 { font-size: 26px; margin-top: 7px; }
+  .login-form > p { font-size: 12px; margin-top: 4px; }
+  .login-form form { margin-top: 20px; }
+  .login-form form > label { margin-bottom: 13px; }
+  .login-form input { min-height: 44px; font-size: 16px; }
+  .login-form form .button { min-height: 44px; font-size: 14px; }
+  .login-help { margin-top: 16px; font-size: 10px; }
+}

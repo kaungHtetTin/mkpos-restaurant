@@ -1,0 +1,166 @@
+/* A gentle spacing reduction for the signed-in owner and office workspaces. */
+@media screen {
+  body:has(.app-shell, .office-shell) {
+    --ui-density-card-padding: 20px;
+    --ui-density-section-gap: 18px;
+    --ui-density-form-gap: 15px;
+  }
+
+  :is(.app-shell, .office-shell) .platform-card {
+    padding: var(--ui-density-card-padding);
+    margin-bottom: var(--ui-density-section-gap);
+  }
+
+  :is(.app-shell, .office-shell) .office-title {
+    margin-bottom: 20px;
+    gap: 18px;
+  }
+
+  :is(.app-shell, .office-shell) .office-kpis {
+    gap: 12px;
+    margin-block: 18px;
+  }
+
+  :is(.app-shell, .office-shell) .office-kpis > div { padding: 18px; }
+  :is(.app-shell, .office-shell) .office-kpis span { margin-bottom: 9px; }
+  :is(.app-shell, .office-shell) .office-detail-grid { gap: 18px; }
+  :is(.app-shell, .office-shell) .office-form,
+  :is(.app-shell, .office-shell) .office-fields { gap: var(--ui-density-form-gap); }
+
+  .app-shell .subscription-payment-header { margin-bottom: 18px; }
+  .app-shell .subscription-payment-requests > .platform-empty { padding-block: 22px; }
+  .office-shell .office-main { padding: 28px; }
+  .office-shell .office-tab-links { margin-bottom: 18px; }
+  .office-shell .office-tools-filters { margin-bottom: 18px; }
+
+  body:has(.app-shell, .office-shell) .modal:not(:has(.receipt-paper)) { padding: 20px; }
+  body:has(.app-shell, .office-shell) .modal:not(:has(.receipt-paper)) .modal-heading { margin-bottom: 18px; }
+  body:has(.app-shell, .office-shell) .modal .office-form,
+  body:has(.app-shell, .office-shell) .modal .office-fields { gap: var(--ui-density-form-gap); }
+}
+
+@media screen and (min-width: 1024px) {
+  .app-shell .topbar { height: 64px; padding-inline: 22px; }
+  .app-shell .workspace main { padding: 20px 22px 24px; }
+  .app-shell .workspace-footer { padding-inline: 22px; }
+  .app-shell .page-heading { margin-bottom: 18px; gap: 14px; }
+  .app-shell .page-heading h1,
+  .app-shell .order-title-row h1 { font-size: 30px; }
+  .app-shell .panel-header,
+  .app-shell .sales-panel > .panel-header { padding: 14px 17px; }
+  .app-shell .nav-label { margin-top: 26px; }
+  .app-shell .nav-item { min-height: 40px; padding: 9px 12px; }
+  .app-shell .sidebar nav { gap: 3px; }
+  .app-shell .stats-grid { gap: 11px; margin-bottom: 18px; }
+  .app-shell .stat { padding: 12px 15px; }
+  .app-shell .floor-layout { gap: 16px; }
+  .app-shell .floor-toolbar { padding: 12px 15px 4px; }
+  .app-shell .table-grid { padding: 13px 15px 16px; gap: 11px; }
+  .app-shell .table-card { padding: 10px 11px 0; }
+  .app-shell .table-drawing { margin-block: 10px; height: 55px; }
+  .app-shell .table-card-title { padding-bottom: 9px; }
+  .app-shell .table-card-bottom { padding-block: 7px; min-height: 30px; }
+  .app-shell .floor-legend { padding: 10px; }
+  .app-shell .food-grid { gap: 11px; }
+  .app-shell .food-info,
+  .app-shell .order-layout .food-info { padding: 10px 12px 12px; }
+  .app-shell .takeaway-grid,
+  .app-shell .kitchen-grid { gap: 14px; }
+  .app-shell .takeaway-card { padding: 16px; }
+  .app-shell .cart-heading,
+  .app-shell .cart-footer { padding: 14px; }
+  .app-shell .cart-line { padding-block: 12px; }
+  .app-shell .setting-row { padding-block: 12px; }
+  .app-shell .restaurant-form { padding: 18px; }
+  .app-shell .history-filters { padding: 15px; }
+  .app-shell .subscription-payment-header { gap: 18px; }
+  .app-shell .subscription-request-table td { padding: 14px 12px; }
+  .app-shell .sales-filters { padding: 13px 15px 4px; }
+  .app-shell .sale-summary-card { padding: 15px 17px; }
+  .app-shell .sale-summary-card > strong { margin-top: 10px; }
+  .app-shell .sale-summary-bottom { margin-top: 10px; }
+  .app-shell .sales-record-summary { padding: 14px 17px; }
+  .app-shell .shift-metric { padding: 20px; }
+  .app-shell .shift-report .shift-metric { padding: 14px; }
+
+  :is(.app-shell, .office-shell) .button:not(.small) { min-height: 38px; padding: 8px 13px; }
+  .app-shell .icon-button { width: 38px; height: 38px; }
+  .app-shell :is(input, select):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=color]):not([type=range]) {
+    min-height: 38px;
+    padding-block: 8px;
+  }
+  .app-shell .sales-filter-fields :is(input, select),
+  .app-shell .sales-search-field > .search { height: 38px; min-height: 38px; }
+  .app-shell .sales-search-field .search input { height: 36px; min-height: 36px; }
+  .app-shell .form-grid { gap: 16px; margin-bottom: 16px; }
+  .app-shell td,
+  .app-shell .sales-panel table td { padding: 11px 14px; }
+  :is(.app-shell, .office-shell) .office-table td { padding: 14px 12px; }
+  :is(.app-shell, .office-shell) .office-table th { padding: 11px 12px; }
+
+  .office-shell .office-sidebar { width: 228px; padding: 26px 16px; }
+  .office-shell .office-workspace { margin-left: 228px; }
+  .office-shell .office-sidebar nav a { min-height: 38px; padding: 10px 12px; }
+  .office-shell .office-sidebar .nav-label { margin-top: 20px; }
+  .office-shell .office-header { min-height: 66px; padding: 10px 28px; }
+  .office-shell .office-header-actions .button { min-height: 36px; padding: 8px 12px; }
+  .office-shell .office-title h1 { font-size: 28px; }
+  .office-shell .office-form :is(input, select):not([type=checkbox]):not([type=radio]):not([type=file]),
+  .office-shell .office-filters :is(input, select) { min-height: 40px; padding-block: 8px; }
+
+  body:has(.app-shell, .office-shell) .modal .button:not(.small) { min-height: 38px; padding: 8px 13px; }
+  body:has(.app-shell, .office-shell) .modal :is(input, select):not([type=checkbox]):not([type=radio]):not([type=file]):not([type=color]) {
+    min-height: 40px;
+    padding-block: 8px;
+  }
+}
+
+@media screen and (min-width: 1280px) {
+  .app-shell .sidebar { width: 214px; }
+  .app-shell .workspace { margin-left: 214px; }
+}
+
+@media screen and (max-width: 1023px) {
+  body:has(.app-shell, .office-shell) {
+    --ui-density-card-padding: 20px;
+  }
+  .office-shell .office-main { padding: 28px; }
+}
+
+@media screen and (max-width: 760px) {
+  body:has(.app-shell, .office-shell) {
+    --ui-density-card-padding: 20px;
+    --ui-density-section-gap: 18px;
+  }
+  .app-shell .workspace main { padding: 22px 16px 24px; }
+  .app-shell .topbar { height: 62px; }
+  .app-shell .page-heading { margin-bottom: 22px; gap: 16px; }
+  .app-shell .panel-header { padding: 17px 15px; }
+  .app-shell .stats-grid { gap: 10px; margin-bottom: 20px; }
+  .app-shell .stat { padding: 13px 14px; }
+  .app-shell .table-grid { padding: 15px 12px 18px; gap: 10px; }
+  .app-shell .table-card { min-height: 184px; padding: 10px 10px 0; }
+  .app-shell .table-drawing { margin: 20px auto 18px; }
+  .app-shell .food-info { padding: 12px; }
+  .app-shell .category-tabs { margin-right: -16px; padding-right: 16px; }
+  .app-shell .setting-row { padding-block: 17px; }
+  .app-shell .shift-metric { padding: 14px; }
+  :is(.app-shell, .office-shell) .office-title { margin-bottom: 20px; gap: 12px; }
+  .office-shell .office-header { min-height: 64px; padding: 10px 22px; }
+}
+
+@media screen and (min-width: 761px) and (max-width: 1199px) {
+  .office-shell .office-tools-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: end; }
+  .office-shell .office-tools-filters > label { min-width: 0; }
+}
+
+@media screen and (max-width: 650px) {
+  body:has(.app-shell, .office-shell) { --ui-density-card-padding: 16px; }
+  :is(.app-shell, .office-shell) .office-kpis > div { padding: 14px; }
+  .office-shell .office-main { padding: 20px 14px; }
+  .office-shell .office-header { padding-inline: 14px; }
+
+  .office-shell .office-mobile-section { margin-top: 14px; }
+  .office-shell .office-sidebar nav { margin-top: 8px; }
+  .office-shell .office-sidebar-bottom { padding-top: 8px; }
+}

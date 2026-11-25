@@ -1,0 +1,7 @@
+{
+  "appId": "com.littlelemon.pos",
+  "appName": "Little Lemon POS",
+  "webDir": "shell",
+  "android": { "allowMixedContent": false, "webContentsDebuggingEnabled": false },
+  "server": { "androidScheme": "https" }
+}

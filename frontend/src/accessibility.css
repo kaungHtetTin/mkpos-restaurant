@@ -1,0 +1,55 @@
+/* Food photos fill the same card area as the existing food illustrations. */
+.food-art .food-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+.food-art .food-add,.food-art .food-edit{z-index:2}
+.food-photo-input{margin-bottom:24px}
+.food-photo-input>.row-between{min-height:36px;margin-bottom:9px}
+.food-photo-input strong{font-size:13px;font-weight:550}
+.photo-preview{height:170px;border:1px dashed #d8dfca;border-radius:10px;background:#f8faf3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;overflow:hidden;color:#7d8a6b;margin-bottom:14px}
+.photo-preview>span{font-size:12px}
+.photo-preview.has-photo{border-style:solid}
+.photo-preview img{width:100%;height:100%;object-fit:contain;background:#f1f3ec}
+.food-photo-input input[type=file]{padding:9px;font-size:12px;max-width:100%}
+.food-photo-input input::file-selector-button{border:0;border-radius:6px;background:#fbedb0;padding:9px 11px;color:#76632c;margin-right:9px;font:inherit;cursor:pointer}
+.photo-removal-note{font-size:11px;color:#a16a4e;margin-top:9px}
+
+.food-grid .food-art{height:auto;aspect-ratio:1}
+.photo-preview{width:min(100%,280px);height:auto;aspect-ratio:1;margin-left:auto;margin-right:auto}
+.crop-existing{width:100%;margin-bottom:16px}
+.square-cropper{padding:14px;border:1px solid #e8ddb0;border-radius:12px;background:#fffdf4;margin-bottom:18px}
+.cropper-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.cropper-heading strong{display:flex;align-items:center;gap:7px;font-size:12px}
+.cropper-heading>span{font-size:10px;background:#fbedb0;color:#806824;border-radius:5px;padding:5px 8px}
+.square-cropper>p{font-size:11px;color:#707b63;line-height:1.7;margin-bottom:14px}
+.crop-viewport{position:relative;width:100%;max-width:320px;aspect-ratio:1;margin:0 auto;background:#293026;border-radius:8px;overflow:hidden;touch-action:none;cursor:grab;user-select:none;outline:2px solid #e6c84d;outline-offset:2px}
+.crop-viewport:active{cursor:grabbing}
+.crop-viewport:focus-visible{outline:3px solid #a78920;outline-offset:3px}
+.crop-viewport>img{position:absolute;max-width:none;max-height:none;pointer-events:none;user-select:none}
+.crop-grid{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 1px #ffffff80}
+.crop-grid>i{position:absolute;background:#ffffff65}
+.crop-grid>i:nth-child(1),.crop-grid>i:nth-child(2){width:1px;height:100%;left:33.333%;top:0}
+.crop-grid>i:nth-child(2){left:66.666%}
+.crop-grid>i:nth-child(3),.crop-grid>i:nth-child(4){height:1px;width:100%;top:33.333%;left:0}
+.crop-grid>i:nth-child(4){top:66.666%}
+.crop-loading{position:absolute;inset:0;display:grid;place-items:center;color:#e6ebdf;font-size:12px}
+.crop-zoom{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:20px;font-size:12px;color:#657455}
+.crop-zoom>output{font-size:11px;font-variant-numeric:tabular-nums}
+.crop-zoom>input{flex-basis:100%;margin-top:4px;padding:0;accent-color:#c7a432;box-shadow:none;min-height:44px;background:transparent}
+.crop-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:6px}
+.crop-actions>.button{font-size:12px;min-height:44px;padding:10px}
+.crop-actions>.primary{grid-column:1/-1}
+
+/* Readable operational labels and comfortable touch controls. */
+.page-heading p,.panel-header p,.stat-top,.stat p,.section-label,.table-card-top,.table-card-title>span,.table-card-bottom,.floor-legend>span,.food-info p,.food-category,.cart-heading p,.cart-subtotal,.cart-help,.price-note,.item-quantity,.ticket-meta,.ticket-time,.setting-row p,.field-hint,.history-filters>label:not(.search),th,td,.receipt>p,.receipt-item,.receipt .row-between,.login-help,.login-form>p,.login-form form>label{color:#707b63}
+.nav-item,.topbar-date,.user-name span,.breadcrumb,.tabs button,.category-tabs button,.search,.search input::placeholder{color:#737e67}
+.table-card-title strong,.food-info h3,.cart-line h3,.setting-row strong,.kitchen-food strong{color:#414e35}
+.stat p,.table-card-title>span,.table-card-bottom,.floor-legend>span,.food-category,.price-note,.cart-heading p,.ticket-meta{font-size:10px}
+.table-card-top,.cart-line h3,.setting-row p,.food-info p,.receipt>p,.receipt-item,.receipt .row-between{font-size:11px}
+.food-info h3{font-size:13px}.food-info strong{font-size:12px}.ready-row strong{color:#57694a}.ready-row p{font-size:10px;color:#77876a}.yellow-note p,.note-bottom,.note-top{color:#82713d}.small-empty strong{color:#6a7a5b}.small-empty p{color:#7c8b6e}.button{font-size:12px}.badge.available,.badge.ready,.badge.paid,.badge.served,.badge.collected{color:#3e714f}.badge.occupied,.badge.sent,.badge.preparing{color:#8a6b18}.badge.payment,.badge.unpaid{color:#765995}.badge.cancelled{color:#a14d3e}.badge.draft{color:#6d765f}
+.receipt{color:#34422a}.receipt .receipt-total{color:#34422a}.receipt h2{color:#293522}.checkbox-line{color:#657455}.item-note{color:#897130}.login-story-footer,.login-art p{color:#79652d}.login-form .eyebrow{color:#8a7734}
+@media(min-width:761px){.stat-top,.page-heading p,.panel-header p,.nav-item{font-size:12px}.table-card-top,.table-card-bottom,.table-card-title>span{font-size:10px}.table-card-title strong{font-size:14px}.tabs button{font-size:12px}.floor-toolbar .tabs button{font-size:11px}.stat p{font-size:10px}.food-info p{font-size:11px;min-height:40px}.food-info h3{font-size:13px}.food-info strong{font-size:12px}.sidebar-footer,.workspace-footer{font-size:10px}.table-card-bottom>span:only-child{gap:6px}.kitchen-food strong{font-size:14px}.kitchen-line-actions>.button.small{font-size:11px}.kitchen-line-actions>.badge{font-size:10px}.receipt-item,.receipt .row-between{font-size:12px}}
+@media(max-width:760px){.quantity-control button{width:44px;height:44px}.quantity-control span{width:29px}.cart-line .text-button{min-height:44px}.cart-line-bottom .button.small{min-height:44px}.food-edit{width:44px;height:44px}.availability-toggle{position:relative;min-height:24px}.availability-toggle:after{content:'';position:absolute;inset:-11px -5px}.kitchen-line-actions>.button.small{min-height:44px}.badge{font-size:11px}.table-card-title>span,.table-card-bottom,.table-card-top{font-size:10px}.table-card-title strong{font-size:14px}.table-card{padding-left:11px;padding-right:11px}.table-card-bottom>span:only-child{font-size:9px;gap:4px}.table-card-bottom>span:only-child>svg{display:none}.floor-legend>span{font-size:9px}.floor-legend{gap:10px}.food-info h3,.catalog-grid .food-info h3,.order-layout .food-info h3{font-size:13px}.food-info p,.catalog-grid .food-info p,.order-layout .food-info p{font-size:11px;min-height:52px}.food-info strong,.catalog-grid .food-info strong,.order-layout .food-info strong{font-size:12px}.food-info,.order-layout .food-info{padding:12px}.cart-line h3{font-size:13px}.cart-items .row-between>strong{font-size:12px}.cart-heading p,.cart-help,.price-note,.cart-subtotal{font-size:11px}.settings-tabs button{min-height:48px}.setting-row .badge{font-size:9px}.setting-row p{font-size:11px}.modal-heading p{font-size:12px}.topbar .mobile-settings,.topbar .mobile-logout{width:36px;height:44px}.mobile-nav>a{font-size:10px}.connection{font-size:8px}.topbar{padding:0 14px}.topbar-right{gap:3px}.breadcrumb{gap:7px}.floor-legend{flex-wrap:wrap}}
+@media print{body{background:white;min-height:0}body>#root{display:none}.modal-overlay{position:static;overflow:visible;display:block}.modal-heading,.modal>.button{display:none}.modal{width:auto;max-width:none;max-height:none;border:0;padding:0;overflow:visible;position:static}.receipt{position:static!important;width:76mm!important;max-width:100%;margin:0!important;box-shadow:none}}
+.camera-open{width:100%;margin-bottom:12px;min-height:44px}
+.camera-viewport{position:relative;width:min(100%,320px);aspect-ratio:1;margin:0 auto;overflow:hidden;border-radius:8px;background:#293026;outline:2px solid #e6c84d;outline-offset:2px}
+.camera-viewport video{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+.camera-actions>.button{grid-column:1/-1}

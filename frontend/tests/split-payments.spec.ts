@@ -1,0 +1,67 @@
+import { test, expect } from '@playwright/test';
+import { randomUUID } from 'node:crypto';
+
+test('partial, item and mixed payments keep clear balances and separate receipts', async ({ page }, info) => {
+  const session = await (await page.request.get('/api/v1/session')).json();
+  const email = `split-${info.project.name}-${Date.now()}@example.test`;
+  const registration = await page.request.post('/api/v1/register', { headers: { 'X-CSRF-TOKEN': session.csrf }, data: { name: 'Owner', email, password: 'Secret123!', password_confirmation: 'Secret123!', business_name: 'Split Cafe', business_code: email.split('@')[0] } });
+  expect(registration.status()).toBe(201);
+  const account = await registration.json();
+  const post = async (path: string, data: object) => {
+    const response = await page.request.post('/api/v1/' + path, { headers: { 'X-CSRF-TOKEN': account.csrf, 'Idempotency-Key': randomUUID() }, data });
+    expect(response.ok(), await response.text()).toBeTruthy(); return response.json();
+  };
+  await post('setup', { name: 'Split Cafe', currency: 'MMK', timezone: 'Asia/Yangon', other_payment_label: 'QR / Card', takeaway_only: true, tables: [], menu: [{ name: 'Rice', category: 'Main', price: 6500 }] });
+  await post('shifts/open', { opening_cash: 1000 });
+  const state = await (await page.request.get('/api/v1/state')).json();
+  let order = await post('orders', { type: 'takeaway' });
+  order = await post(`orders/${order.id}/add-item`, { version: order.version, menu_item_id: state.menu[0].id, quantity: 2 });
+  order = await post(`orders/${order.id}/submit`, { version: order.version });
+  await page.goto(`/orders/${order.id}`);
+  const openCheckout = async () => {
+    if (info.project.name === 'phone') await page.getByRole('button', { name: /View order/ }).click();
+    await page.getByRole('button', { name: 'Collect payment', exact: true }).click();
+    return page.getByRole('dialog');
+  };
+  let dialog = await openCheckout();
+  await dialog.getByLabel('Pay for', { exact: true }).selectOption('amount');
+  await dialog.getByLabel('Payment amount (MMK)', { exact: true }).fill('3000');
+  await dialog.getByLabel('Cash received (MMK)', { exact: true }).fill('3500');
+  await dialog.getByRole('button', { name: 'Confirm payment', exact: true }).click();
+  dialog = page.getByRole('dialog', { name: 'Payment recorded', exact: true });
+  await expect(dialog.locator('.receipt-paper-total')).toContainText('3,000');
+  await expect(dialog).toContainText('10,000');
+  await page.getByRole('button', { name: 'Close dialog', exact: true }).click();
+  // Closing a receipt leaves the mobile cart open; close it before reopening.
+  if (info.project.name === 'phone') await page.getByRole('button', { name: 'Close current order', exact: true }).click();
+  await page.goto('/takeaway');
+  await expect(page.locator('.takeaway-card')).toContainText('Part paid');
+  await expect(page.locator('.takeaway-balance')).toContainText('10,000');
+  await page.locator('.takeaway-card').click();
+  dialog = await openCheckout();
+  await dialog.getByLabel('Pay for', { exact: true }).selectOption('items');
+  await dialog.getByRole('spinbutton', { name: /Pay quantity/ }).fill('1');
+  await expect(dialog.locator('.payment-total')).toContainText('3,500');
+  await dialog.getByRole('button', { name: 'Cash + other', exact: true }).click();
+  await dialog.getByLabel('Cash portion (MMK)', { exact: true }).fill('1000');
+  await dialog.getByLabel('Cash received (MMK)', { exact: true }).fill('1200');
+  await dialog.getByRole('checkbox').check();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  await page.screenshot({ path: `test-results/${info.project.name}-split-checkout.png`, fullPage: true });
+  await dialog.getByRole('button', { name: 'Confirm payment', exact: true }).click();
+  dialog = page.getByRole('dialog', { name: 'Payment recorded', exact: true });
+  await expect(dialog.locator('.receipt-paper-total')).toContainText('3,500');
+  await expect(dialog).toContainText('Rice');
+  await expect(dialog).toContainText('3,000');
+  await page.getByRole('button', { name: 'Close dialog', exact: true }).click();
+  if (info.project.name === 'phone') await page.getByRole('button', { name: 'Close current order', exact: true }).click();
+  dialog = await openCheckout();
+  await dialog.getByRole('button', { name: 'QR / Card', exact: true }).click();
+  await dialog.getByRole('checkbox').check();
+  await dialog.getByRole('button', { name: 'Confirm payment', exact: true }).click();
+  await expect(page.getByRole('dialog', { name: 'Payment complete', exact: true }).locator('.receipt-paper-total')).toContainText('6,500');
+  const saved = await (await page.request.get(`/api/v1/orders/${order.id}`)).json();
+  expect(saved.paid).toBe(true); expect(saved.balance_due).toBe(0); expect(saved.received_amount).toBe(13000);
+  expect(saved.receipts).toHaveLength(3); expect(saved.payments).toHaveLength(4);
+  expect(saved.receipts[0].amount).toBe(3000); expect(saved.receipts[1].credited_amount).toBe(3000);
+});

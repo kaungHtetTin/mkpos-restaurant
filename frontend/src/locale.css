@@ -1,0 +1,12 @@
+.language-control{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;color:var(--ink);font-size:12px}
+.language-control select{width:92px;min-height:38px;margin:0;padding:7px 5px;border-color:var(--border);font-size:12px}
+.language-public{position:fixed;top:16px;right:66px;z-index:40}
+html[lang=my]{font-family:'Myanmar Text','Noto Sans Myanmar','Pyidaungsu','Segoe UI',sans-serif;line-height:1.7}
+html[lang=my] :is(h1,h2,h3,.brand){font-family:inherit;letter-spacing:0;line-height:1.7}
+html[lang=my] :is(.button,.nav-item,.tabs button,.badge,.category-tabs button){line-height:1.8}
+html[lang=my] .eyebrow{letter-spacing:.3px}
+html[lang=my] .heading-actions{flex-wrap:wrap}
+html[lang=my] .nav-item{white-space:normal}
+@media(max-width:650px){.language-control{gap:3px}.language-control>svg{display:none}.language-control select{width:70px;font-size:11px}.language-public select{width:90px}.topbar-right{flex-wrap:wrap}.topbar{height:auto;min-height:64px}.language-public{top:15px}.login-story>.brand{padding-right:100px}html[lang=my] .finance-record{gap:14px}}
+
+@media(max-width:650px){.topbar{padding-inline:14px;gap:8px}.topbar-right{gap:4px;max-width:calc(100% - 84px)}.topbar .language-control select{width:64px}.breadcrumb{min-width:0}.breadcrumb strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
