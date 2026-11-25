@@ -59,8 +59,8 @@ class OfficeController extends Controller
 
     public function login(Request $request): JsonResponse
     {
-        $data = $request->validate(['email' => 'required|email', 'password' => 'required|string|max:100']);
-        if (! Auth::guard('office')->attempt(['email' => strtolower($data['email']), 'password' => $data['password'], 'active' => true, 'is_platform_admin' => true, 'business_id' => null])) {
+        $data = $request->validate(['email' => 'required|email', 'password' => 'required|string|max:100', 'remember' => 'sometimes|boolean']);
+        if (! Auth::guard('office')->attempt(['email' => strtolower($data['email']), 'password' => $data['password'], 'active' => true, 'is_platform_admin' => true, 'business_id' => null], $request->boolean('remember'))) {
             throw ValidationException::withMessages(['email' => 'The office account or password is incorrect.']);
         }
         $request->session()->regenerate();

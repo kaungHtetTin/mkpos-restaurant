@@ -44,7 +44,7 @@ return [
     */
 
     'guards' => [
-        'office' => ['driver' => 'session', 'provider' => 'users'],
+        'office' => ['driver' => 'session', 'provider' => 'users', 'remember' => 43200],
         'web' => [
             'driver' => 'session',
             'provider' => 'users',

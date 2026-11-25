@@ -63,10 +63,11 @@ function OfficeLogin({ onLogin, initialError }: { onLogin: (user: User) => void;
   useRealtime('platform', 'public');
   const [error, setError] = useState(initialError), [busy, setBusy] = useState(false);
   const submit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); setBusy(true); setError('');
-    try { const response = await api<{ user: User; csrf: string }>('office/login', Object.fromEntries(new FormData(e.currentTarget))); setCsrf(response.csrf); onLogin(response.user); } catch (e) { setError((e as Error).message); } finally { setBusy(false); }
+    e.preventDefault(); if (busy) return; setBusy(true); setError('');
+    const form = new FormData(e.currentTarget);
+    try { const response = await api<{ user: User; csrf: string }>('office/login', { ...Object.fromEntries(form), remember: form.has('remember') }); setCsrf(response.csrf); onLogin(response.user); } catch (e) { setError((e as Error).message); } finally { setBusy(false); }
   };
-  return <div className="office-login"><AppearanceControl publicPage/><section className="office-login-card"><div className="office-brand"><PlatformLogo/><span>{platformName}<small>PLATFORM OFFICE</small></span></div><h1>Office sign in.</h1><p>Manage business owners and subscriptions.</p><form onSubmit={e => void submit(e)}><label>Email<input type="email" name="email" autoComplete="username" required/></label><label>Password<input type="password" name="password" autoComplete="current-password" required/></label><ErrorBox error={error}/><button className="button primary full" disabled={busy}>{busy ? 'Signing in...' : 'Sign in to office'}</button></form></section></div>;
+  return <div className="office-login"><AppearanceControl publicPage/><section className="office-login-card"><div className="office-brand"><PlatformLogo/><span>{platformName}<small>PLATFORM OFFICE</small></span></div><h1>Office sign in.</h1><p>Manage business owners and subscriptions.</p><form onSubmit={e => void submit(e)}><label>Email<input type="email" name="email" autoComplete="username" required/></label><label>Password<input type="password" name="password" autoComplete="current-password" required/></label><label className="checkbox-line office-remember"><input type="checkbox" name="remember"/>Remember me for 30 days</label><ErrorBox error={error}/><button className="button primary full" disabled={busy}>{busy ? 'Signing in...' : 'Sign in to office'}</button></form></section></div>;
 }
 function ErrorBox({ error }: { error: string }) { return error ? <div className="form-error" role="alert">{error}</div> : null; }
 function Heading(props: { title: string; text: string; children?: ReactNode }) { return <OfficeHeading {...props}/>; }

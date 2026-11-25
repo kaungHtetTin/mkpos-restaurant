@@ -77,7 +77,7 @@ class MultiBusinessTest extends TestCase
         $this->app->instance('env', 'production');
         config(['auth.office_admin' => ['name' => 'Office Setup', 'email' => 'SETUP@example.com', 'password' => 'OfficePassword123!']]);
 
-        $this->artisan('db:seed', ['--force' => true])->assertSuccessful();
+        $this->artisan('db:seed', ['--force' => true])->expectsOutputToContain('Office super admin created successfully.')->assertSuccessful();
 
         $admin = User::where('email', 'setup@example.com')->firstOrFail();
         $this->assertSame('Office Setup', $admin->name);
@@ -93,7 +93,7 @@ class MultiBusinessTest extends TestCase
 
         $admin->update(['password' => 'ChangedPassword123!']);
         config(['auth.office_admin.email' => 'another@example.com']);
-        $this->artisan('db:seed', ['--force' => true])->assertSuccessful();
+        $this->artisan('db:seed', ['--force' => true])->expectsOutputToContain('Office admin already exists; its account and password were preserved.')->assertSuccessful();
 
         $this->assertSame(1, User::where('is_platform_admin', true)->count());
         $this->assertTrue(Hash::check('ChangedPassword123!', $admin->fresh()->password));
@@ -103,7 +103,7 @@ class MultiBusinessTest extends TestCase
     {
         config(['auth.office_admin' => ['name' => 'Office Admin', 'email' => null, 'password' => null]]);
 
-        $this->seed();
+        $this->artisan('db:seed', ['--force' => true])->expectsOutputToContain('Office admin not seeded: set OFFICE_ADMIN_EMAIL and OFFICE_ADMIN_PASSWORD')->assertSuccessful();
 
         $this->assertDatabaseMissing('users', ['is_platform_admin' => true]);
     }

@@ -54,9 +54,13 @@ class DatabaseSeeder extends Seeder
     {
         $credentials = config('auth.office_admin');
         if (blank($credentials['email']) && blank($credentials['password'])) {
+            $this->command?->warn('Office admin not seeded: set OFFICE_ADMIN_EMAIL and OFFICE_ADMIN_PASSWORD in backend/.env, then run php artisan config:clear before seeding again.');
+
             return;
         }
         if (User::where('is_platform_admin', true)->exists()) {
+            $this->command?->info('Office admin already exists; its account and password were preserved.');
+
             return;
         }
 
@@ -74,5 +78,6 @@ class DatabaseSeeder extends Seeder
         $user->roles = [];
         $user->active = true;
         $user->save();
+        $this->command?->info('Office super admin created successfully.');
     }
 }

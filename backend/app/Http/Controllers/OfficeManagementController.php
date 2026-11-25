@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class OfficeManagementController extends Controller
@@ -29,6 +30,7 @@ class OfficeManagementController extends Controller
                 $admin->password = $data['password'];
             }
             $admin->office_version++;
+            $admin->remember_token = Str::random(60);
             $admin->save();
             $r->session()->put('office_version', $admin->office_version);
             OfficeData::audit(null, 'office_account_updated', ['password_changed' => ! empty($data['password'])]);
@@ -141,6 +143,7 @@ class OfficeManagementController extends Controller
                     $admin->password = $data['password'];
                 }
                 $admin->office_version = ($admin->office_version ?? 0) + 1;
+                $admin->remember_token = Str::random(60);
                 $admin->save();
                 $id = $admin->id;
                 if ($id === Auth::guard('office')->id()) {
