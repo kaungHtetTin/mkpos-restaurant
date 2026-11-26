@@ -3,7 +3,7 @@ $ErrorActionPreference = 'Stop'
 $appsRoot = Split-Path $PSScriptRoot -Parent
 Push-Location $appsRoot
 try {
-    & (Join-Path $PSScriptRoot 'prepare-windows.ps1') -Arch $Arch
+    & (Join-Path $PSScriptRoot 'prepare-branding.ps1')
     & (Join-Path $PSScriptRoot 'prepare-electron.ps1') -Arch $Arch
     $version = if ($Arch -eq 'ia32') { '43.8.13' } else { '45.5.0' }
     if (-not $env:ELECTRON_BUILDER_COMPRESSION_LEVEL) { $env:ELECTRON_BUILDER_COMPRESSION_LEVEL = '1' }

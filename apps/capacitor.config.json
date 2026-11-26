@@ -1,7 +1,7 @@
 {
   "appId": "com.littlelemon.pos",
-  "appName": "Little Lemon POS",
+  "appName": "MKPOS restaurant",
   "webDir": "shell",
   "android": { "allowMixedContent": false, "webContentsDebuggingEnabled": false },
-  "server": { "androidScheme": "https" }
+  "server": { "url": "https://restaurant.mkposmyanmar.com", "androidScheme": "https" }
 }

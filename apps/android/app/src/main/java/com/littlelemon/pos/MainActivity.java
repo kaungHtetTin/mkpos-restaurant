@@ -12,7 +12,6 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
-import android.widget.EditText;
 import android.widget.PopupMenu;
 import androidx.activity.OnBackPressedCallback;
 import com.getcapacitor.BridgeActivity;
@@ -22,12 +21,13 @@ import java.net.URI;
 
 public class MainActivity extends BridgeActivity {
     private static final String PRODUCTION_URL = "https://restaurant.mkposmyanmar.com";
-    private String serverUrl;
+    private final String serverUrl = PRODUCTION_URL;
     private boolean showingError;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        serverUrl = getPreferences(MODE_PRIVATE).getString("serverUrl", PRODUCTION_URL);
+        WebView.enableSlowWholeDocumentDraw();
+        registerPlugin(MkposPrinterPlugin.class);
         config = new CapConfig.Builder(this).setServerUrl(serverUrl).setAndroidScheme("https")
             .setAllowMixedContent(false).setWebContentsDebuggingEnabled(false).create();
         super.onCreate(savedInstanceState);
@@ -38,7 +38,7 @@ public class MainActivity extends BridgeActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                if (sameOrigin(url)) view.evaluateJavascript("window.print=function(){var p=document.getElementById('printable-receipt');RestaurantNative.print(p?Number(p.dataset.paperWidth):0,p?Math.ceil(p.scrollHeight*25.4/96)+4:0);};", null);
+                if (sameOrigin(url)) view.evaluateJavascript("window.print=function(){if(window.restaurantPrintCurrentDocument){window.restaurantPrintCurrentDocument().catch(function(){});return;}var p=document.getElementById('printable-receipt');RestaurantNative.print(p?Number(p.dataset.paperWidth):0,p?Math.ceil(p.scrollHeight*25.4/96)+4:0);};", null);
             }
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
@@ -46,30 +46,34 @@ public class MainActivity extends BridgeActivity {
                 if (request.isForMainFrame() && !showingError && !isFinishing()) {
                     showingError = true;
                     new AlertDialog.Builder(MainActivity.this).setTitle("Cannot reach restaurant")
-                        .setMessage("Check your connection and server address.\n" + serverUrl)
+                        .setMessage("Check your internet connection and try again.\n" + serverUrl)
                         .setPositiveButton("Retry", (dialog, which) -> { showingError = false; view.loadUrl(serverUrl); })
-                        .setNegativeButton("Server settings", (dialog, which) -> { showingError = false; showServerSettings(); })
+                        .setNegativeButton("Close", (dialog, which) -> finish())
                         .setOnCancelListener(dialog -> showingError = false).show();
                 }
             }
         });
         findViewById(R.id.restaurant_menu).setOnClickListener(view -> {
             PopupMenu menu = new PopupMenu(this, view);
-            menu.getMenu().add("Home"); menu.getMenu().add("Reload"); menu.getMenu().add("Print"); menu.getMenu().add("Server settings");
+            menu.getMenu().add("Home"); menu.getMenu().add("Reload"); menu.getMenu().add("Printer settings"); menu.getMenu().add("Print");
             menu.setOnMenuItemClickListener(item -> {
                 switch (item.getTitle().toString()) {
                     case "Home": webView.loadUrl(serverUrl); break;
                     case "Reload": webView.reload(); break;
-                    case "Print": printPage(0, 0); break;
-                    default: showServerSettings(); break;
+                    case "Printer settings": printerAction("openRestaurantPrinterSettings"); break;
+                    case "Print": printerAction("restaurantPrintCurrentDocument"); break;
+                    default: return false;
                 }
                 return true;
             }); menu.show();
         });
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override public void handleOnBackPressed() {
-                if (webView.canGoBack()) webView.goBack();
-                else new AlertDialog.Builder(MainActivity.this).setMessage("Close the restaurant app?").setNegativeButton("Stay", null).setPositiveButton("Close", (dialog, which) -> finish()).show();
+                webView.evaluateJavascript("Boolean(window.dismissRestaurantPrinterSettings&&window.dismissRestaurantPrinterSettings())", result -> {
+                    if ("true".equals(result)) return;
+                    if (webView.canGoBack()) webView.goBack();
+                    else new AlertDialog.Builder(MainActivity.this).setMessage("Close the restaurant app?").setNegativeButton("Stay", null).setPositiveButton("Close", (dialog, which) -> finish()).show();
+                });
             }
         });
     }
@@ -79,23 +83,11 @@ public class MainActivity extends BridgeActivity {
         catch (Exception error) { return false; }
     }
 
-    private void showServerSettings() {
-        EditText address = new EditText(this); address.setSingleLine(true); address.setText(serverUrl);
-        address.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_URI);
-        AlertDialog dialog = new AlertDialog.Builder(this).setTitle("Restaurant server").setView(address)
-            .setMessage("Use HTTPS for camera access. Localhost refers to this Android device.")
-            .setNegativeButton("Cancel", null).setNeutralButton("Production", (d, w) -> saveServer(PRODUCTION_URL)).setPositiveButton("Connect", null).create();
-        dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
-            try {
-                URI uri = new URI(address.getText().toString().trim());
-                if (!("https".equals(uri.getScheme()) || "http".equals(uri.getScheme())) || uri.getHost() == null || uri.getUserInfo() != null || uri.getQuery() != null || uri.getFragment() != null || !(uri.getPath().isEmpty() || uri.getPath().equals("/"))) throw new IllegalArgumentException();
-                saveServer(uri.getScheme() + "://" + uri.getRawAuthority()); dialog.dismiss();
-            } catch (Exception error) { address.setError("Enter a server address such as https://pos.example.com"); }
-        })); dialog.show();
-    }
-
-    private void saveServer(String value) {
-        getPreferences(MODE_PRIVATE).edit().putString("serverUrl", value).apply(); recreate();
+    private void printerAction(String method) {
+        if (!sameOrigin(bridge.getWebView().getUrl())) return;
+        bridge.getWebView().evaluateJavascript("(function(){if(typeof window." + method + "!=='function')return false;Promise.resolve(window." + method + "()).catch(function(){});return true;})()", result -> {
+            if ("false".equals(result)) new AlertDialog.Builder(this).setTitle("Printing").setMessage("Upload the latest website build to enable native printer settings.").setPositiveButton("OK", null).show();
+        });
     }
 
     private class PrintBridge {

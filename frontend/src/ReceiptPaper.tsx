@@ -7,6 +7,8 @@ import type { Settings, ChargeTotals, OptionSnapshot } from './types';
 import { BillBreakdown } from './Charges';
 import { OptionSummary } from './MenuOptions';
 import { BusinessLogo } from './BusinessLogo';
+import { devicePrinter, printElement } from './device-printing';
+import { PrinterSettingsButton } from './DevicePrinterSettings';
 
 export interface ReceiptData {
   receiptNumber: string; orderNumber: string; paidAt: string; orderLabel: string;
@@ -47,6 +49,7 @@ export function ReceiptPaper({ settings, data, printable = false }: { settings: 
 }
 
 async function printPaper(element: HTMLElement, width: number) {
+  if (devicePrinter()) { await printElement(element); return; }
   await document.fonts.ready;
   await Promise.all(Array.from(element.querySelectorAll('img'), image => image.decode()));
   const measurement = element.cloneNode(true) as HTMLElement;
@@ -74,12 +77,12 @@ export function ReceiptDialog({ settings, data, onClose, sample = false }: { set
   const width = receiptWidth(settings);
   return <Modal title={data.documentTitle || (sample ? tr("Test receipt") : tr("Payment complete"))} subtitle={sample ? tr("Sample only. This does not create a sale.") : data.isBill ? tr("Bill ready · {value1} mm paper", {value1: width}) : tr("Receipt ready · {value1} mm paper", {value1: width})} onClose={onClose}>
     <div className="receipt-dialog-paper" ref={ref}><ReceiptPaper settings={settings} data={data} printable/></div>
-    <p className="receipt-print-help">{tr("Select")} {width}  {tr("mm paper in your printer’s print dialog. Use 100% scale and turn off browser headers and footers.")}</p>
+    {devicePrinter() ? <><p className="receipt-print-help">{tr('Print sends immediately using this device’s saved printer and paper size.')}</p><PrinterSettingsButton/></> : <p className="receipt-print-help">{tr("Select")} {width}  {tr("mm paper in your printer’s print dialog. Use 100% scale and turn off browser headers and footers.")}</p>}
     {error && <div className="form-error" role="alert">{tr(error)}</div>}
     <button className="button primary full" disabled={busy} onClick={async () => {
       const paper = ref.current?.querySelector<HTMLElement>('.receipt-paper'); if (!paper) return;
       setBusy(true); setError('');
-      try { await printPaper(paper, width); } catch { setError(tr("The print dialog could not be opened. Please try again.")); } finally { setBusy(false); }
+      try { await printPaper(paper, width); } catch (exception) { setError(tr((exception as Error).message)); } finally { setBusy(false); }
     }}><Printer size={18}/>{busy ? tr("Preparing receipt...") : data.isBill ? tr("Print bill") : sample ? tr("Print test receipt") : tr("Print receipt")}</button>
   </Modal>;
 }

@@ -1,8 +1,8 @@
 const { contextBridge, ipcRenderer } = require('electron');
-if (location.protocol === 'file:') {
-  contextBridge.exposeInMainWorld('Desktop', {
-    settings: () => ipcRenderer.invoke('server:settings'),
-    connect: url => ipcRenderer.invoke('server:connect', url),
-    local: () => ipcRenderer.invoke('server:local'),
-  });
+if (location.origin === 'https://restaurant.mkposmyanmar.com') {
+  const api = { platform: 'windows' };
+  for (const method of ['getConfig', 'saveConfig', 'listDevices', 'listPaired', 'openBluetoothSettings', 'openSystemSettings', 'checkConnection', 'print']) {
+    api[method] = payload => ipcRenderer.invoke('printer:' + method, payload);
+  }
+  contextBridge.exposeInMainWorld('RestaurantPrinter', Object.freeze(api));
 }

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Little Lemon POS</string>
-    <string name="title_activity_main">Little Lemon POS</string>
+    <string name="app_name">MKPOS restaurant</string>
+    <string name="title_activity_main">MKPOS restaurant</string>
     <string name="package_name">com.littlelemon.pos</string>
     <string name="custom_url_scheme">com.littlelemon.pos</string>
 </resources>
