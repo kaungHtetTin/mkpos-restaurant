@@ -1,3 +1,4 @@
+import { setLanguage, setTheme } from './toggle-controls';
 import { test, expect, type Page } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { myMessages } from '../src/locales/my';
@@ -24,8 +25,8 @@ test('app bar actions fit small screens and Settings Back retains the source men
   for (const width of info.project.name === 'phone' ? [320, 360, 393, 760] : [1440, 1024]) {
     await page.setViewportSize({ width, height: 900 });
     for (const language of ['en', 'my']) {
-      await bar.locator('.language-control select').selectOption(language);
-      const controls = [bar.locator('.language-control select'), bar.getByRole('combobox', { name: language === 'my' ? myMessages.Appearance : 'Appearance', exact: true }), bar.getByRole('button', { name: language === 'my' ? myMessages['App menu'] : 'App menu', exact: true })];
+      await setLanguage(page, language);
+      const controls = [bar.locator('.language-control'), bar.locator('.appearance-control'), bar.getByRole('button', { name: language === 'my' ? myMessages['App menu'] : 'App menu', exact: true })];
       for (const control of controls) {
         const rect = await control.boundingBox();
         expect(rect).not.toBeNull(); expect(rect!.x).toBeGreaterThanOrEqual(0); expect(rect!.x + rect!.width).toBeLessThanOrEqual(width);
@@ -35,10 +36,10 @@ test('app bar actions fit small screens and Settings Back retains the source men
     }
   }
   await page.setViewportSize(info.project.name === 'phone' ? { width:360, height:800 } : { width:1440, height:1000 });
-  await bar.locator('.language-control select').selectOption('en');
-  await bar.getByRole('combobox', { name: 'Appearance', exact: true }).selectOption('dark');
+  await setLanguage(page, 'en');
+  await setTheme(page, 'dark');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await bar.getByRole('combobox', { name: 'Appearance', exact: true }).selectOption('light');
+  await setTheme(page, 'light');
   const menuButton = bar.getByRole('button', { name: 'App menu', exact: true });
   await menuButton.focus(); await page.keyboard.press('Enter');
   const menu = page.getByRole('dialog', { name: 'App menu', exact: true });
@@ -63,9 +64,9 @@ test('app bar actions fit small screens and Settings Back retains the source men
   expect(stateReads).toBe(beforeSettings);
   await page.goForward(); await expect(page.getByRole('heading', { name: 'Make yourself at home.' })).toBeVisible();
   await page.goBack(); await expect(search).toHaveValue('Rice');
-  await bar.locator('.language-control select').selectOption('my');
+  await setLanguage(page, 'my');
   await bar.screenshot({ path: `../artifacts/modern-app-bar-${info.project.name}.png` });
-  await bar.locator('.language-control select').selectOption('en');
+  await setLanguage(page, 'en');
   if (info.project.name === 'phone') await bar.getByRole('link', { name:'Home', exact:true }).click();
   else await page.locator('.sidebar .brand').click();
   await expect(page).toHaveURL(/\/tables$/);

@@ -23,9 +23,8 @@
  .business-app-bar .topbar-right{gap:6px;max-width:none}
  .business-app-bar .language-control{gap:0;margin:0}
  .business-app-bar .language-control>svg{display:none}
- .business-app-bar .language-control select{width:80px;min-height:44px;height:44px;padding:7px 6px;margin:0;border-radius:12px;font-size:12px;background:var(--surface,#fff)}
- .business-app-bar .appearance-control{width:44px;height:44px;flex-basis:44px;border-radius:12px;background:var(--surface,#fff)}
- .business-app-bar .appearance-control select{min-width:44px;min-height:44px}
+ .business-app-bar .language-control{width:76px;height:44px;min-height:44px}
+ .business-app-bar .appearance-control{width:64px;height:44px;flex-basis:64px;border-radius:14px;background:var(--surface,#fff)}
  .business-app-bar .topbar-right>:is(.connection,.topbar-date,.user-avatar,.user-name){display:none}
  .business-app-bar .appbar-mobile-status{display:flex;align-items:center;gap:5px;font-size:10px;line-height:1.6;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
  .appbar-mobile-status i{width:6px;height:6px;border-radius:50%;background:#7e9c6d;flex-shrink:0}

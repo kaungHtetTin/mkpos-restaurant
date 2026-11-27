@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { Languages } from 'lucide-react';
 import { myMessages } from './locales/my';
 import { translateValidation } from './locale-validation';
 import { formatLocalizedDate } from './locale-dates';
@@ -117,10 +116,7 @@ export function BusinessLocaleProvider({ children }: { children: ReactNode }) {
 
 export function LanguageControl({ publicPage = false }: { publicPage?: boolean }) {
   const { locale, change } = useLocale();
-  return <label className={`language-control${publicPage ? ' language-public' : ''}`} title={tr('Language')}>
-    <Languages size={17} aria-hidden="true"/>
-    <select aria-label={tr('Language')} value={locale} onChange={event => change(valid(event.target.value))}>
-      <option value="en" lang="en">English</option><option value="my" lang="my">မြန်မာ</option>
-    </select>
-  </label>;
+  return <button className={`language-control${publicPage ? ' language-public' : ''}`} type="button" role="switch" aria-label={tr('Myanmar language')} aria-checked={locale === 'my'} title={tr('Language')} onClick={() => change(locale === 'en' ? 'my' : 'en')}>
+    <span className="language-toggle-track" aria-hidden="true"><span className="language-toggle-thumb"/><span className="language-toggle-value" lang="en">EN</span><span className="language-toggle-value" lang="my">မြ</span></span>
+  </button>;
 }

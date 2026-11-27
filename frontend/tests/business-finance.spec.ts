@@ -1,3 +1,4 @@
+import { setTheme } from './toggle-controls';
 import {test,expect,type Page} from '@playwright/test';
 import {randomUUID} from 'node:crypto';
 async function navigate(page:Page,name:string){
@@ -20,7 +21,7 @@ test('owner records income and expenses, manages categories, and keeps filters w
  const entry=async(kind:string,amount:string,description:string)=>{await page.getByRole('button',{name:'Add entry',exact:true}).click();await page.getByLabel('Type',{exact:true}).last().selectOption(kind);await page.getByLabel('Amount (MMK)',{exact:true}).fill(amount);await page.getByLabel('Description',{exact:true}).fill(description);await page.getByRole('button',{name:'Save changes',exact:true}).click();await expect(page.getByRole('dialog')).toHaveCount(0);};
  await entry('income','5000','Other income');await entry('expense','1200','Rice purchase');await expect(page.locator('.finance-totals')).toContainText('3,800 MMK');await expect(observer.locator('.finance-record')).toHaveCount(2);
  await page.getByRole('button',{name:'Edit Rice purchase',exact:true}).click();await page.getByLabel('Amount (MMK)',{exact:true}).fill('1500');await page.getByLabel('Notes (optional)',{exact:true}).fill('Delivery included');await page.getByRole('button',{name:'Save changes',exact:true}).click();await expect(page.getByRole('dialog')).toHaveCount(0);await expect(page.locator('.finance-totals')).toContainText('3,500 MMK');
- await page.getByLabel('Appearance',{exact:true}).selectOption('dark');await expect(page.locator('.finance-records')).toHaveCSS('background-color','rgb(32, 40, 34)');
+ await setTheme(page, 'dark');await expect(page.locator('.finance-records')).toHaveCSS('background-color','rgb(32, 40, 34)');
  await page.screenshot({path:`test-results/${info.project.name}-business-finance-dark.png`,fullPage:true,animations:'disabled'});
  await page.getByRole('button',{name:'Categories',exact:true}).click();await expect(page.getByRole('button',{name:'Delete Operations',exact:true})).toBeDisabled();await page.getByRole('button',{name:'Edit category',exact:true}).click();await page.getByLabel('Category name',{exact:true}).fill('Restaurant operations');await page.getByLabel('Available for new entries',{exact:true}).uncheck();await page.getByRole('button',{name:'Save changes',exact:true}).click();await expect(page.getByRole('dialog')).toHaveCount(0);await expect(page.locator('.finance-category')).toContainText('Archived');
  await page.getByRole('button',{name:'Entries',exact:true}).click();await expect(page.locator('.finance-record').first()).toContainText('Operations');

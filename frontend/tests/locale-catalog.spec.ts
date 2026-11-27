@@ -24,7 +24,7 @@ test('every owner translation lookup has a Myanmar catalog entry', () => {
         const key = node.arguments[0].text;
         if (!Object.hasOwn(myMessages, key) && !invariantMessages.has(key)) missing.push(`${filename}: ${key}`);
       }
-      if (ts.isJsxText(node) && /[A-Za-z]/.test(node.text) && !['G-', 'English'].includes(node.text.trim())) missing.push(`${filename}: unlocalized JSX text ${node.text.trim()}`);
+      if (ts.isJsxText(node) && /[A-Za-z]/.test(node.text) && !['G-', 'English', 'EN'].includes(node.text.trim())) missing.push(`${filename}: unlocalized JSX text ${node.text.trim()}`);
       ts.forEachChild(node, visit);
     };
     visit(source);

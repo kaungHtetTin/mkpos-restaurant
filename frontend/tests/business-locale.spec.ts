@@ -1,3 +1,4 @@
+import { setLanguage } from './toggle-controls';
 import { test, expect } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { myMessages } from '../src/locales/my';
@@ -16,13 +17,13 @@ test('language persists, syncs tabs, and preserves sign-in values while office s
   await page.getByLabel('Email', { exact: true }).fill('keep@example.test');
   await page.evaluate(() => { (window as any).__localeMount = 'retained'; });
   const other = await page.context().newPage(); await other.goto('/');
-  await page.locator('.language-control select').selectOption('my');
+  await setLanguage(page, 'my');
   await expect(page.locator('html')).toHaveAttribute('lang', 'my');
   await expect(page.getByLabel(myMessages.Email, { exact: true })).toHaveValue('keep@example.test');
-  await expect(other.locator('.language-control select')).toHaveValue('my');
+  await expect(other.locator('.language-control')).toHaveAttribute('aria-checked', 'true');
   await expect(page.getByRole('button', { name: myMessages['Sign in'], exact: true })).toBeVisible();
   expect(await page.evaluate(() => (window as any).__localeMount)).toBe('retained');
-  await page.reload(); await expect(page.locator('.language-control select')).toHaveValue('my');
+  await page.reload(); await expect(page.locator('.language-control')).toHaveAttribute('aria-checked', 'true');
   await page.goto('/office'); await expect(page.getByRole('heading', { name: 'Office sign in.', exact: true })).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await other.close();
@@ -30,14 +31,14 @@ test('language persists, syncs tabs, and preserves sign-in values while office s
 
 test('required fields and server authentication errors use the selected language', async ({ page }) => {
   await page.goto('/');
-  await page.locator('.language-control select').selectOption('my');
+  await setLanguage(page, 'my');
   await page.getByRole('button', { name: myMessages['Sign in'], exact: true }).click();
   await expect.poll(() => page.locator('input[name=email]').evaluate((input: HTMLInputElement) => input.validationMessage)).toBe(myMessages['Please fill out this field.']);
   await page.getByLabel(myMessages.Email, { exact: true }).fill('no-such-locale-user@example.test');
   await page.getByLabel(myMessages.Password, { exact: true }).fill('IncorrectPassword!');
   await page.getByRole('button', { name: myMessages['Sign in'], exact: true }).click();
   await expect(page.getByRole('alert')).toHaveText(myMessages['The email or password is incorrect.']);
-  await page.locator('.language-control select').selectOption('en');
+  await setLanguage(page, 'en');
   await expect(page.getByRole('alert')).toHaveText('The email or password is incorrect.');
 });
 
@@ -51,17 +52,17 @@ test('owner language changes preserve current orders, editable forms, and busine
   const setup = await page.request.post('/api/v1/setup', { headers: { 'X-CSRF-TOKEN': account.csrf, 'Idempotency-Key': randomUUID() }, data: { name: 'Owner Cafe EN', currency: 'MMK', timezone: 'Asia/Yangon', other_payment_label: 'Custom Pay EN', takeaway_only: false, tables: [{ name: 'A1', seats: 4 }], menu: [{ name: 'Rice EN', category: 'Custom category EN', price: 6500 }] } });
   expect(setup.ok()).toBeTruthy();
   await page.goto('/tables'); await expect(page.locator('.connection')).toContainText('Connected');
-  await page.locator('.language-control select').selectOption('my');
+  await setLanguage(page, 'my');
   await expect(page.locator('.breadcrumb strong')).toHaveText(myMessages.Tables);
   await page.getByRole('button', { name: `${myMessages['Table {value1}'].replace('{value1}', 'A1')}, ${myMessages.available}`, exact: true }).click();
   await page.getByRole('button', { name: myMessages['Add {value1}'].replace('{value1}', 'Rice EN'), exact: true }).click();
   await expect(page.locator('.cart-total')).toContainText('6,500 MMK');
   await expect(page.locator('.toast')).toContainText(myMessages['{value1} added.'].replace('{value1}', 'Rice EN'));
-  await page.locator('.language-control select').selectOption('en');
+  await setLanguage(page, 'en');
   await expect(page.locator('.cart-total')).toContainText('6,500 MMK');
   await expect(page.locator('.toast')).toContainText('Rice EN added.');
   await expect(page.locator('.food-info h3')).toHaveText('Rice EN');
-  await page.locator('.language-control select').selectOption('my');
+  await setLanguage(page, 'my');
   await expect(page.locator('.toast')).toContainText(myMessages['{value1} added.'].replace('{value1}', 'Rice EN'));
   await page.screenshot({ path: `test-results/${info.project.name}-myanmar-order.png`, fullPage: true, animations: 'disabled' });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
@@ -73,15 +74,15 @@ test('owner language changes preserve current orders, editable forms, and busine
   await page.getByRole('button', { name: myMessages.Entries, exact: true }).click();
   await page.getByRole('button', { name: myMessages['Add entry'], exact: true }).click();
   await page.getByLabel(myMessages.Description, { exact: true }).fill('Unsent description EN');
-  await page.evaluate(() => document.querySelector<HTMLSelectElement>('.language-control select')?.focus());
-  await page.locator('.language-control select').selectOption('en', { force: true });
+  await page.evaluate(() => document.querySelector<HTMLButtonElement>('.language-control')?.focus());
+  await setLanguage(page, 'en', { force: true });
   await expect(page.getByLabel('Description', { exact: true })).toHaveValue('Unsent description EN');
   await page.getByRole('button', { name: 'Close dialog', exact: true }).click();
   const state = await (await page.request.get('/api/v1/state')).json();
   expect(state.business.name).toBe('Owner Cafe EN'); expect(state.menu[0].name).toBe('Rice EN');
   const finance = await (await page.request.get('/api/v1/business-finance')).json();
   expect(finance.categories[0].name).toBe('Custom category EN'); expect(finance.entries.total).toBe(0);
-  await page.locator('.language-control select').selectOption('my');
+  await setLanguage(page, 'my');
   const screens = [
     ['/sales', 'Every sale, in one place'], ['/shifts', 'Cashier shifts'], ['/tables', 'Your floor, at a glance'],
     ['/takeaway', 'Takeaway orders'], ['/kitchen', 'Let’s get cooking'], ['/guest-orders?tab=links', 'Guest requests'],
@@ -103,19 +104,19 @@ test('owner language changes preserve current orders, editable forms, and busine
   await page.goto('/menu');
   await page.getByRole('button', { name: myMessages['Add menu item'], exact: true }).click();
   await page.getByLabel(myMessages['Food name'], { exact: true }).fill('Unsent dish EN');
-  await page.locator('.language-control select').selectOption('en', { force: true });
+  await setLanguage(page, 'en', { force: true });
   await expect(page.getByRole('dialog')).toHaveAccessibleName('A new addition');
   await expect(page.getByLabel('Food name', { exact: true })).toHaveValue('Unsent dish EN');
   await expect(page.getByRole('spinbutton', { name: /^Base price \(MMK, whole units\)/ })).toBeVisible();
   await page.getByRole('button', { name: 'Close dialog', exact: true }).click();
-  await page.locator('.language-control select').selectOption('my');
+  await setLanguage(page, 'my');
 
   // A failed server read stays canonical so an already-visible error can change language.
   const unavailable = '**/api/v1/business-finance?*';
   await page.route(unavailable, route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ message: 'Server Error' }) }));
   await page.goto('/finance');
   await expect(page.getByRole('alert')).toContainText(myMessages['Server Error']);
-  await page.locator('.language-control select').selectOption('en');
+  await setLanguage(page, 'en');
   await expect(page.getByRole('alert')).toContainText('Server Error');
   await page.unroute(unavailable);
   await page.getByRole('button', { name: 'Retry', exact: true }).click();
@@ -145,7 +146,7 @@ test('Myanmar receipts and refund reports localize cash while retaining custom p
   const cashOrder = await paid('cash'); const otherOrder = await paid('other');
   await post(`payments/${cashOrder.payment.id}/refund`, { version: cashOrder.payment.adjustment_version, amount: 1000, method: 'cash', confirmed: true, reason: 'Agreed refund EN' });
   await page.goto(`/orders/${cashOrder.id}`);
-  await page.locator('.language-control select').selectOption('my');
+  await setLanguage(page, 'my');
   await page.getByRole('button', { name: myMessages.Receipt, exact: true }).click();
   await expect(page.getByRole('dialog').locator('.receipt-paper')).toContainText(myMessages.Cash);
   await expect(page.getByRole('dialog').locator('.receipt-paper')).toContainText('Rice EN');

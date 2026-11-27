@@ -1,0 +1,38 @@
+import { test, expect } from '@playwright/test';
+
+test('language and theme are keyboard/touch switches that persist without submitting or remounting the form', async ({ page }, info) => {
+  await page.emulateMedia({ colorScheme:'light' });
+  await page.goto('/');
+  const language = page.locator('.language-control');
+  const theme = page.locator('.appearance-control');
+  await expect(language).toHaveAttribute('role', 'switch');
+  await expect(theme).toHaveAttribute('role', 'switch');
+  await expect(page.locator('.language-control select,.appearance-control select')).toHaveCount(0);
+  await expect(language).toHaveAttribute('aria-checked', 'false');
+  await expect(theme).toHaveAttribute('aria-checked', 'false');
+  const field = page.locator('input[name=email]');
+  await field.fill('retained@example.test');
+  const retained = await field.elementHandle();
+  let logins = 0, documents = 0;
+  page.on('request', request => { if (request.url().endsWith('/api/v1/login')) logins++; if (request.resourceType() === 'document') documents++; });
+  await language.focus(); await page.keyboard.press('Space');
+  await expect(language).toHaveAttribute('aria-checked', 'true');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'my');
+  await language.press('Enter');
+  await expect(language).toHaveAttribute('aria-checked', 'false');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await theme.click(); await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await theme.press('Space'); await expect(theme).toHaveAttribute('aria-checked', 'false');
+  await theme.press('Enter'); await expect(theme).toHaveAttribute('aria-checked', 'true');
+  if (info.project.name === 'phone') await language.tap(); else await language.click();
+  await expect(language).toHaveAttribute('aria-checked', 'true');
+  await expect(field).toHaveValue('retained@example.test');
+  expect(await retained!.evaluate(node => node.isConnected)).toBe(true);
+  expect(logins).toBe(0); expect(documents).toBe(0);
+  await page.screenshot({path:`../artifacts/toggle-switches-${info.project.name}.png`,animations:'disabled'});
+  await page.reload();
+  await expect(language).toHaveAttribute('aria-checked', 'true');
+  await expect(theme).toHaveAttribute('aria-checked', 'true');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'my');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+});

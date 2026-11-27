@@ -1,5 +1,7 @@
 export const myCommon: Record<string, string> = {
   'Language': 'ဘာသာစကား',
+  'Myanmar language': 'မြန်မာဘာသာ',
+  'Dark mode': 'အမှောင်ပုံစံ',
   'Workspace': 'လုပ်ငန်းစီမံခန့်ခွဲမှု',
   'WORKSPACE': 'လုပ်ငန်းစီမံခန့်ခွဲမှု',
   'Sales': 'အရောင်း',
