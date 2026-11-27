@@ -66,6 +66,33 @@ public class PrinterInstrumentedTest {
             if (original == null) Files.deleteIfExists(profile.toPath()); else Files.write(profile.toPath(), original);
         }
     }
+    @Test public void noNativeToolbarAndDeviceBackDismissesTheWebOverlayFirst() throws Exception {
+        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            AtomicReference<String> result = new AtomicReference<>();
+            for (int attempt = 0; attempt < 100; attempt++) {
+                CountDownLatch ready = new CountDownLatch(1);
+                scenario.onActivity(activity -> {
+                    assertEquals("Secondary native toolbar must be absent", 0, activity.getResources().getIdentifier("restaurant_menu", "id", activity.getPackageName()));
+                    activity.getBridge().getWebView().evaluateJavascript("location.origin + ':' + document.readyState", value -> { result.set(value); ready.countDown(); });
+                });
+                assertTrue(ready.await(5, TimeUnit.SECONDS));
+                if ("\"https://restaurant.mkposmyanmar.com:complete\"".equals(result.get())) break;
+                Thread.sleep(250);
+            }
+            CountDownLatch installed = new CountDownLatch(1);
+            scenario.onActivity(activity -> activity.getBridge().getWebView().evaluateJavascript("window.__backOverlayCount=0;window.addEventListener('restaurant:back-request',function(e){e.preventDefault();window.__backOverlayCount++;});true", value -> installed.countDown()));
+            assertTrue(installed.await(5, TimeUnit.SECONDS));
+            scenario.onActivity(activity -> activity.getOnBackPressedDispatcher().onBackPressed());
+            for (int attempt = 0; attempt < 40; attempt++) {
+                CountDownLatch read = new CountDownLatch(1);
+                scenario.onActivity(activity -> activity.getBridge().getWebView().evaluateJavascript("String(window.__backOverlayCount)", value -> { result.set(value); read.countDown(); }));
+                assertTrue(read.await(5, TimeUnit.SECONDS));
+                if ("\"1\"".equals(result.get())) return;
+                Thread.sleep(100);
+            }
+            fail("Device Back did not reach the web overlay: " + result.get());
+        }
+    }
     private byte[] read(ServerSocket server) throws Exception {
         try (Socket socket = server.accept(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             socket.setSoTimeout(40000); byte[] buffer = new byte[4096]; int count;

@@ -1,4 +1,7 @@
 export const myPrinters: Record<string, string> = {
+  'Printing': 'ပရင်တာနှင့် ပုံနှိပ်ခြင်း',
+  'App menu': 'အက်ပ်မီနူး',
+  'Home': 'ပင်မစာမျက်နှာ',
   'Finish the active print job before changing printer settings.': 'ပရင်တာဆက်တင် မပြောင်းမီ လက်ရှိပုံနှိပ်မှု ပြီးသည်အထိ စောင့်ပါ။',
   'Printer settings on this device': 'ဤစက်အတွက် ပရင်တာဆက်တင်များ',
   'Dismiss print message': 'ပုံနှိပ်မှု အသိပေးချက် ပိတ်ရန်',

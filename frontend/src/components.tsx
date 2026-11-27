@@ -25,7 +25,13 @@ export function Modal({ title, subtitle, children, onClose, wide = false }: { ti
     focusables()[0]?.focus();
     const key = (e: KeyboardEvent) => { if (e.key === 'Escape') close.current(); if (e.key === 'Tab') { const els = focusables(); const first = els[0], last = els.at(-1); if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); } } };
     document.addEventListener('keydown', key);
-    return () => { document.body.style.overflow = previousOverflow; document.removeEventListener('keydown', key); previous?.focus(); };
+    const nativeBack = (event: Event) => {
+      const dialogs = document.querySelectorAll('.modal[role="dialog"]');
+      if (dialogs[dialogs.length - 1] !== ref.current) return;
+      event.preventDefault(); close.current();
+    };
+    window.addEventListener('restaurant:back-request', nativeBack);
+    return () => { document.body.style.overflow = previousOverflow; document.removeEventListener('keydown', key); window.removeEventListener('restaurant:back-request', nativeBack); previous?.focus(); };
   }, []);
   return createPortal(<div className="modal-overlay" onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}><div className={`modal ${wide ? 'wide' : ''}`} role="dialog" aria-modal="true" aria-label={title} ref={ref}><div className="modal-heading"><div><h2>{title}</h2>{subtitle && <p>{subtitle}</p>}</div><button className="icon-button" aria-label={tr("Close dialog")} onClick={onClose}><X size={20}/></button></div>{children}</div></div>, document.body);
 }

@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Modal } from './components';
 import { tr, useLocale } from './locale';
 import { defaultPrinter, devicePrinter, isPrintActive, printCurrentDocument, printTestReceipt, type PrinterConfig, type PrinterDevice } from './device-printing';
 import './device-printer.css';
 
 declare global { interface Window { dismissRestaurantPrinterSettings?: () => boolean } }
-export function PrinterSettingsButton() {
+export function PrinterSettingsButton({ onOpen }: { onOpen?: () => void }) {
   useLocale();
+  const navigate = useNavigate();
   if (!devicePrinter()) return null;
-  return <button className="button" type="button" onClick={() => window.openRestaurantPrinterSettings?.()}>{tr('Printer settings on this device')}</button>;
+  return <button className="button" type="button" onClick={() => { onOpen?.(); navigate('/settings?tab=printing'); }}>{tr('Printer settings on this device')}</button>;
 }
 export function DevicePrinterSettingsHost() {
   useLocale();

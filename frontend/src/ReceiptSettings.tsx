@@ -4,11 +4,10 @@ import { Check, Printer, ReceiptText } from 'lucide-react';
 import { api } from './api';
 import { useApp } from './context';
 import { ReceiptDialog, ReceiptPaper, type ReceiptData } from './ReceiptPaper';
-import { PrinterSettingsButton } from './DevicePrinterSettings';
 
 const presets = [56, 58, 80, 88, 112];
 
-export function ReceiptSettings() {
+export function ReceiptSettings({ active = true }: { active?: boolean }) {
   const { locale } = useLocale();
   const { state, refresh, notify, connected } = useApp();
   const [title, setTitle] = useState(state.settings.receipt_title ?? tr("SALES RECEIPT"));
@@ -18,6 +17,7 @@ export function ReceiptSettings() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [test, setTest] = useState(false);
+  useEffect(() => { if (!active) setTest(false); }, [active]);
   const [logo, setLogo] = useState<File | null>(null), [logoPreview, setLogoPreview] = useState<string | null>(null), [removeLogo, setRemoveLogo] = useState(false);
   const logoInput = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -47,7 +47,6 @@ export function ReceiptSettings() {
     finally { setBusy(false); }
   };
   return <>
-    <PrinterSettingsButton/>
     <div className="panel-header"><div><h2><ReceiptText size={19}/>{tr("Receipt settings")}</h2><p>{tr("Choose your paper width and the messages your guests see.")}</p></div></div>
     <div className="receipt-settings-layout">
       <form className="receipt-settings-form" onSubmit={save}>

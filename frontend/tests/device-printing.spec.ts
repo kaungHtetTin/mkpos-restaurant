@@ -3,14 +3,14 @@ import { test, expect, type Page } from '@playwright/test';
 async function prepare(page: Page, platform: 'windows' | 'android' = 'windows') {
   await page.addInitScript(({ platform }) => {
     const saved = { connection: 'system', paper: '80mm', host: '', port: 9100, address: '', printerName: '', documentPrinterName: '', copies: 1, cut: false, color: false, landscape: false, bluetooth_mode: 'standard' };
-    const state = { saved, printCalls: [] as { html: string; kind: string }[], saveCalls: 0, failNext: false, pairing: 0 };
+    const state = { saved, printCalls: [] as { html: string; kind: string }[], saveCalls: 0, failNext: false, pairing: 0, systemSettings: 0 };
     Object.assign(window, { printerTest: state });
     window.RestaurantPrinter = {
       platform, getConfig: async () => ({ ...state.saved }) as never,
       saveConfig: async ({ config }) => { state.saved = { ...config }; state.saveCalls++; return { ...config }; },
       listDevices: async () => ({ items: [{ name: 'Receipt USB', address: 'Receipt USB' }] }),
       listPaired: async () => ({ items: [{ name: 'Thermal 58', address: platform === 'windows' ? 'COM5' : '00:11:22:33:44:55' }] }),
-      openBluetoothSettings: async () => { state.pairing++; }, openSystemSettings: async () => {},
+      openBluetoothSettings: async () => { state.pairing++; }, openSystemSettings: async () => { state.systemSettings++; },
       checkConnection: async () => ({ message: 'Connection opened. No print data was sent.' }),
       print: async payload => { state.printCalls.push(payload); await new Promise(resolve => setTimeout(resolve, 250)); if (state.failNext) { state.failNext = false; throw new Error('Printer unavailable. Check power.'); } return { status: 'sent', message: 'Receipt data sent. Check the printer before printing again.' }; },
     };
@@ -32,12 +32,13 @@ test('device-only save, failed print retry and Back preserve the business receip
   const title = await page.getByLabel('Receipt title', { exact: true }).elementHandle();
   let writes = 0, reads = 0;
   page.on('request', request => { if (request.url().includes('/api/v1/') && request.method() !== 'GET') writes++; if (request.url().includes('/api/v1/state')) reads++; });
-  await page.getByRole('button', { name: 'Printer settings on this device', exact: true }).click();
-  const dialog = page.getByRole('dialog', { name: 'Printer settings on this device', exact: true });
+  await page.locator('.settings-tabs').getByRole('button', { name: 'Printing', exact: true }).click();
+  const dialog = page.locator('[data-settings-pane=printing]');
   await expect(dialog.getByLabel('Connection type')).toBeEnabled();
   await dialog.getByRole('button', { name: 'Refresh printers', exact: true }).click();
   await expect(dialog.locator('datalist option')).toHaveAttribute('value', 'Receipt USB');
   await dialog.getByRole('button', { name: 'Open Windows printer settings', exact: true }).click();
+  expect(await page.evaluate(() => (window as unknown as {printerTest:{systemSettings:number}}).printerTest.systemSettings)).toBe(1);
   await dialog.getByLabel('Connection type').selectOption('tcp');
   await dialog.getByLabel('Printer paper', { exact: true }).selectOption('58mm');
   await dialog.getByLabel('Printer IP / hostname', { exact: true }).fill('192.168.1.101');
@@ -63,19 +64,39 @@ test('device-only save, failed print retry and Back preserve the business receip
   expect(output.printCalls[1].html).toContain('စမ်းသပ်ပုံနှိပ်ခြင်း');
   expect(output.printCalls[1].html).toContain('width:58mm');
   const beforeClose = reads;
-  await page.evaluate(() => window.dismissRestaurantPrinterSettings?.());
+  await page.goBack();
   await expect(dialog).not.toBeVisible();
   expect(await title!.evaluate(node => node.isConnected)).toBe(true);
   await expect(page.getByLabel('Receipt title', { exact: true })).toHaveValue('Unsaved business receipt title');
   expect(reads).toBe(beforeClose); expect(writes).toBe(0);
-  await page.getByRole('button', { name: 'Printer settings on this device', exact: true }).click();
+  await page.locator('.settings-tabs').getByRole('button', { name: 'Printing', exact: true }).click();
   await expect(dialog.getByLabel('Printer IP / hostname')).toHaveValue('192.168.1.101');
-  await dialog.getByRole('button', { name: 'Close dialog', exact: true }).click();
+  await page.goBack();
+  for (const label of ['Restaurant', 'Tax & charges', 'Tables', 'Categories', 'Staff access', 'Receipts']) {
+    const tab = page.locator('.settings-tabs').getByRole('button', { name:label, exact:true });
+    await tab.click(); await expect(tab).toHaveClass('selected');
+  }
+  await expect(page.getByLabel('Receipt title', { exact:true })).toHaveValue('Unsaved business receipt title');
+  expect(await title!.evaluate(node => node.isConnected)).toBe(true);
+  expect(reads).toBe(beforeClose); expect(writes).toBe(0);
+  await page.getByRole('button', { name:'Test receipt', exact:true }).click();
+  const receiptUrl = page.url();
+  expect(await page.evaluate(() => !window.dispatchEvent(new Event('restaurant:back-request', { cancelable:true })))).toBeTruthy();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  expect(page.url()).toBe(receiptUrl);
+  await page.getByRole('button', { name:'Test receipt', exact:true }).click();
+  await page.getByRole('dialog').getByRole('button', { name:'Printer settings on this device', exact:true }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(dialog).toBeVisible();
+  await page.goBack();
+  await expect(page.getByLabel('Receipt title', {exact:true})).toHaveValue('Unsaved business receipt title');
+  expect(await title!.evaluate(node => node.isConnected)).toBe(true);
+  expect(writes).toBe(0);
 });
 test('Android printer discovery and system fallback settings remain device-local', async ({ page }) => {
   await prepare(page, 'android');
-  await page.getByRole('button', { name: 'Printer settings on this device', exact: true }).click();
-  const dialog = page.getByRole('dialog', { name: 'Printer settings on this device', exact: true });
+  await page.locator('.settings-tabs').getByRole('button', { name: 'Printing', exact: true }).click();
+  const dialog = page.locator('[data-settings-pane=printing]');
   await expect(dialog.getByLabel('Connection type')).toBeEnabled();
   await expect(dialog).toContainText('Android system printing requires the system dialog');
   await expect(dialog.getByLabel('Printer copies')).toHaveCount(0);
@@ -88,7 +109,7 @@ test('Android printer discovery and system fallback settings remain device-local
   await dialog.getByLabel('Bluetooth print mode', { exact: true }).selectOption('compatibility');
   await dialog.getByRole('button', { name: 'Save printer settings', exact: true }).click();
   await expect(dialog.getByRole('status')).toContainText('Printer settings saved');
-  await page.keyboard.press('Escape');
+  await page.goBack();
   await expect(dialog).not.toBeVisible();
   expect(await page.evaluate(() => (window as unknown as { printerTest: { pairing: number } }).printerTest.pairing)).toBe(1);
 });

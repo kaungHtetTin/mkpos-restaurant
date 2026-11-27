@@ -66,7 +66,9 @@ function writeRasterBitmap(bytes, filename) {
     assert.deepEqual([...jobs[1].subarray(0, 2)], [27, 64]); assert.deepEqual([...jobs[1].subarray(-3)], [29, 86, 0]);
     writeRasterBitmap(jobs[1], path.join(output, arch + '-native-receipt.bmp'));
     await page.route(production.appUrl + '/**', route => route.abort('internetdisconnected'));
-    await electron.evaluate(({ Menu }) => { Menu.getApplicationMenu().items[0].submenu.items.find(item => item.label === 'Home').click(); });
+    assert.equal(await electron.evaluate(({ Menu }) => Menu.getApplicationMenu()), null, 'native menu bar must be absent');
+    // CDP key dispatch bypasses native accelerators; exercise the reload path directly.
+    await electron.evaluate(({ BrowserWindow }) => { BrowserWindow.getAllWindows().find(window => window.getTitle() === 'MKPOS restaurant').webContents.reload(); });
     await page.getByRole('heading', { name: 'Cannot reach MKPOS restaurant' }).waitFor();
     assert.equal(await page.evaluate(() => typeof window.RestaurantPrinter), 'undefined', 'offline page must not receive native printer access');
     await page.unroute(production.appUrl + '/**');

@@ -12,7 +12,6 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
-import android.widget.PopupMenu;
 import androidx.activity.OnBackPressedCallback;
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.BridgeWebViewClient;
@@ -53,23 +52,9 @@ public class MainActivity extends BridgeActivity {
                 }
             }
         });
-        findViewById(R.id.restaurant_menu).setOnClickListener(view -> {
-            PopupMenu menu = new PopupMenu(this, view);
-            menu.getMenu().add("Home"); menu.getMenu().add("Reload"); menu.getMenu().add("Printer settings"); menu.getMenu().add("Print");
-            menu.setOnMenuItemClickListener(item -> {
-                switch (item.getTitle().toString()) {
-                    case "Home": webView.loadUrl(serverUrl); break;
-                    case "Reload": webView.reload(); break;
-                    case "Printer settings": printerAction("openRestaurantPrinterSettings"); break;
-                    case "Print": printerAction("restaurantPrintCurrentDocument"); break;
-                    default: return false;
-                }
-                return true;
-            }); menu.show();
-        });
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override public void handleOnBackPressed() {
-                webView.evaluateJavascript("Boolean(window.dismissRestaurantPrinterSettings&&window.dismissRestaurantPrinterSettings())", result -> {
+                webView.evaluateJavascript("(function(){var event=new Event(\"restaurant:back-request\",{cancelable:true});return !window.dispatchEvent(event)||Boolean(window.dismissRestaurantPrinterSettings&&window.dismissRestaurantPrinterSettings());})()", result -> {
                     if ("true".equals(result)) return;
                     if (webView.canGoBack()) webView.goBack();
                     else new AlertDialog.Builder(MainActivity.this).setMessage("Close the restaurant app?").setNegativeButton("Stay", null).setPositiveButton("Close", (dialog, which) -> finish()).show();
@@ -81,13 +66,6 @@ public class MainActivity extends BridgeActivity {
     private boolean sameOrigin(String value) {
         try { URI current = new URI(value), server = new URI(serverUrl); return server.getScheme().equals(current.getScheme()) && server.getHost().equals(current.getHost()) && server.getPort() == current.getPort(); }
         catch (Exception error) { return false; }
-    }
-
-    private void printerAction(String method) {
-        if (!sameOrigin(bridge.getWebView().getUrl())) return;
-        bridge.getWebView().evaluateJavascript("(function(){if(typeof window." + method + "!=='function')return false;Promise.resolve(window." + method + "()).catch(function(){});return true;})()", result -> {
-            if ("false".equals(result)) new AlertDialog.Builder(this).setTitle("Printing").setMessage("Upload the latest website build to enable native printer settings.").setPositiveButton("OK", null).show();
-        });
     }
 
     private class PrintBridge {

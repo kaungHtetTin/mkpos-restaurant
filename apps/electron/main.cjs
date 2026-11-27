@@ -45,13 +45,14 @@ async function openServer() {
 
 async function goBack() {
   if (sameOrigin(mainWindow.webContents.getURL(), serverUrl)) {
-    const closed = await mainWindow.webContents.executeJavaScript('Boolean(window.dismissRestaurantPrinterSettings&&window.dismissRestaurantPrinterSettings())');
+    const closed = await mainWindow.webContents.executeJavaScript('(function(){const event=new Event("restaurant:back-request",{cancelable:true});return !window.dispatchEvent(event)||Boolean(window.dismissRestaurantPrinterSettings&&window.dismissRestaurantPrinterSettings());})()');
     if (closed) return;
   }
   if (mainWindow.webContents.navigationHistory.canGoBack()) mainWindow.webContents.navigationHistory.goBack();
 }
 
 function secureWindow(window) {
+  window.setMenu(null);
   window.webContents.on('page-title-updated', event => { event.preventDefault(); window.setTitle('MKPOS restaurant'); });
   window.webContents.on('will-navigate', (event, url) => {
     if (!sameOrigin(url, serverUrl)) event.preventDefault();
@@ -80,17 +81,19 @@ else {
       const { response } = await dialog.showMessageBox(BrowserWindow.fromWebContents(contents), { type: 'question', message: 'Allow the restaurant app to use your camera?', buttons: ['Deny', 'Allow'], defaultId: 0 });
       callback(response === 1);
     });
-    mainWindow = new BrowserWindow({ show: !process.env.POS_SMOKE_TEST, width: 1360, height: 900, minWidth: 380, minHeight: 600, title: 'MKPOS restaurant', icon: appIcon, webPreferences: preferences });
+    mainWindow = new BrowserWindow({ show: !process.env.POS_SMOKE_TEST, width: 1360, height: 900, minWidth: 380, minHeight: 600, autoHideMenuBar: true, title: 'MKPOS restaurant', icon: appIcon, webPreferences: preferences });
     secureWindow(mainWindow);
     registerPrinting({ app, BrowserWindow, ipcMain: require('electron').ipcMain, dialog, shell, getMainWindow: () => mainWindow, serverUrl });
     mainWindow.webContents.on('did-fail-load', (_event, code, _description, url, isMainFrame) => {
       if (isMainFrame && code !== -3 && sameOrigin(url, serverUrl)) void showOffline();
     });
-    Menu.setApplicationMenu(Menu.buildFromTemplate([
-      { label: 'Restaurant', submenu: [{ label: 'Home', accelerator: 'CmdOrCtrl+H', click: openServer }, { label: 'Printer settings', click: () => printingAction('openRestaurantPrinterSettings') }, { type: 'separator' }, { label: 'Print', accelerator: 'CmdOrCtrl+P', click: () => printingAction('restaurantPrintCurrentDocument') }, { type: 'separator' }, { role: 'quit' }] },
-      { label: 'Edit', submenu: [{ role: 'undo' }, { role: 'redo' }, { type: 'separator' }, { role: 'cut' }, { role: 'copy' }, { role: 'paste' }, { role: 'selectAll' }] },
-      { label: 'View', submenu: [{ label: 'Back', accelerator: 'Alt+Left', click: goBack }, { label: 'Reload', accelerator: 'CmdOrCtrl+R', click: () => mainWindow.webContents.getURL() === offlineUrl ? openServer() : mainWindow.webContents.reload() }, { role: 'resetZoom' }, { role: 'zoomIn' }, { role: 'zoomOut' }, { role: 'togglefullscreen' }] },
-    ]));
+    Menu.setApplicationMenu(null);
+    mainWindow.webContents.on('before-input-event', (event, input) => {
+      if (input.type !== 'keyDown') return;
+      if ((input.control || input.meta) && input.key.toLowerCase() === 'p') { event.preventDefault(); void printingAction('restaurantPrintCurrentDocument'); }
+      else if (input.alt && input.key === 'ArrowLeft') { event.preventDefault(); void goBack(); }
+      else if ((input.control || input.meta) && input.key.toLowerCase() === 'r') { event.preventDefault(); if (mainWindow.webContents.getURL() === offlineUrl) void openServer(); else mainWindow.webContents.reload(); }
+    });
     await openServer();
   });
   app.on('window-all-closed', () => app.quit());

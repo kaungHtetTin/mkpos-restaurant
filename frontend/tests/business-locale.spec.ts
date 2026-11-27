@@ -89,7 +89,7 @@ test('owner language changes preserve current orders, editable forms, and busine
     ['/help', 'Help & support'], ['/billing', 'Subscription'], ['/settings', 'Make yourself at home'],
   ];
   for (const [route, title] of screens) {
-    await page.goto(route); await expect(page.locator('h1')).toHaveText(myMessages[title] + '.');
+    await page.goto(route); await expect(page.locator('h1:visible')).toHaveText(myMessages[title] + '.');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), route).toBeTruthy();
     await expect(page.locator('html')).toHaveAttribute('lang', 'my');
   }

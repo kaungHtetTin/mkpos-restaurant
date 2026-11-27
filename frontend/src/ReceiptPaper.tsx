@@ -77,7 +77,7 @@ export function ReceiptDialog({ settings, data, onClose, sample = false }: { set
   const width = receiptWidth(settings);
   return <Modal title={data.documentTitle || (sample ? tr("Test receipt") : tr("Payment complete"))} subtitle={sample ? tr("Sample only. This does not create a sale.") : data.isBill ? tr("Bill ready · {value1} mm paper", {value1: width}) : tr("Receipt ready · {value1} mm paper", {value1: width})} onClose={onClose}>
     <div className="receipt-dialog-paper" ref={ref}><ReceiptPaper settings={settings} data={data} printable/></div>
-    {devicePrinter() ? <><p className="receipt-print-help">{tr('Print sends immediately using this device’s saved printer and paper size.')}</p><PrinterSettingsButton/></> : <p className="receipt-print-help">{tr("Select")} {width}  {tr("mm paper in your printer’s print dialog. Use 100% scale and turn off browser headers and footers.")}</p>}
+    {devicePrinter() ? <><p className="receipt-print-help">{tr('Print sends immediately using this device’s saved printer and paper size.')}</p><PrinterSettingsButton onOpen={onClose}/></> : <p className="receipt-print-help">{tr("Select")} {width}  {tr("mm paper in your printer’s print dialog. Use 100% scale and turn off browser headers and footers.")}</p>}
     {error && <div className="form-error" role="alert">{tr(error)}</div>}
     <button className="button primary full" disabled={busy} onClick={async () => {
       const paper = ref.current?.querySelector<HTMLElement>('.receipt-paper'); if (!paper) return;

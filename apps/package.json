@@ -1,6 +1,6 @@
 {
   "name": "little-lemon-pos-apps",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "private": true,
   "description": "Android and Windows clients for MKPOS restaurant",
   "author": "MKPOS",
@@ -29,7 +29,7 @@
     "productName": "MKPOS restaurant",
     "asar": true,
     "directories": {
-      "output": "../artifacts/windows/1.0.4"
+      "output": "../artifacts/windows/1.0.5"
     },
     "files": [
       "electron/**/*",
